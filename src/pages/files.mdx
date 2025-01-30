@@ -1,0 +1,118 @@
+import { CompactTable, CompactRow, CompactCell } from '@/components/Table'
+
+export const description =
+  'This section outlines the various endpoints for managing files, including creating, updating, retrieving, and deleting files.'
+
+# File Management
+
+Managing files is an essential feature for many platforms, allowing users to upload, update, retrieve, and delete files. These files are used in `categories`, `products`, and `variants`, making them integral to the platform's functionality. In this section, we will discuss the endpoints for managing files.
+
+## File Model
+
+Each file in the platform is represented by a model that contains attributes like the URL, file, and type. Below is a breakdown of the properties of the file model.
+
+### Properties
+
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>_id</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell isLast>Unique identifier for the file.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>url</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell isLast>
+      URL of the file. This must be unique and is required.
+    </CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>file</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell isLast>
+      File of the model. This must be unique and is required.
+    </CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>type</CompactCell>
+    <CompactCell type>enum</CompactCell>
+    <CompactCell isLast>
+      Type of the file. The allowed values are "products", "variants", and
+      "category". This must be unique and is required.
+    </CompactCell>
+  </CompactRow>
+</CompactTable>
+
+---
+
+## Create File {{ tag: 'POST', label: '/api/v1/files' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to create a new file. You must provide the URL, file, and type of the file.
+
+  </Col>
+  <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
+
+<CompactTable heading="Body" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Body</CompactCell>
+    <CompactCell type>form-data</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell>files</CompactCell>
+    <CompactCell isLast>`{{local_path}}/file1.png` , `{{local_path}}/file2.png`</CompactCell>
+  </CompactRow>
+</CompactTable>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "unique_file_id",
+      "url": "https://example.com/file.jpg",
+      "name": "example_file",
+      "type": "products",
+      "createdAt": "2025-01-20T10:00:00Z",
+      "updatedAt": "2025-01-20T10:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Delete File {{ tag: 'DELETE', label: '/api/v1/:fileId' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to delete a specific file using its unique ID.
+
+    ### Edge Cases:
+    - **Invalid ID**: If the provided ID does not correspond to an existing file, a `404 Not Found` status code will be returned.
+
+  </Col>
+  <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
+
+    ```json {{ title: 'Response' }}
+    {
+      "status": 200
+      "message": "File deleted successfully."
+    }
+    ```
+
+  </Col>
+</Row>

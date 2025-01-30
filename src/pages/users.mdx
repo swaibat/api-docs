@@ -1,60 +1,65 @@
+import { CompactTable, CompactRow, CompactCell } from '@/components/Table'
+
 export const description =
-  'On this page, we’ll dive into the different user endpoints you can use to manage users programmatically.'
+  'On this page, we’ll dive into the different user endpoints you can use to manage users programmatically in an e-commerce platform.'
 
 # Users
 
-As the name suggests, users are a core part of Protocol — the very reason Protocol exists is so you can have secure conversations with your users. On this page, we'll dive into the different user endpoints you can use to manage users programmatically. We'll look at how to query, create, update, and delete users. {{ className: 'lead' }}
+As the name suggests, users are a core part of our e-commerce platform. The reason for the platform's existence is to facilitate secure transactions and interactions with users. On this page, we'll explore the different user endpoints you can use to manage users programmatically. We'll cover how to query, create, update, and delete users, as well as handle edge cases like unauthorized access and invalid inputs. {{ className: 'lead' }}
 
-## The user model
+## User model
 
-The user model contains all the information about your users, such as their username, avatar, and phone number. It also contains a reference to the conversation between you and the user and information about when they were last active on Protocol.
+The user model contains all the information about your users, such as their name, email, phone number, and role. It also includes the user's verification status, device details, and other essential data for secure transactions on the platform.
 
 ### Properties
 
-<Properties>
-  <Property name="_id" type="objectId">
-    Unique identifier for the user.
-  </Property>
-  <Property name="username" type="string">
-    Unique username for login.
-  </Property>
-  <Property name="email" type="string">
-    Email should be verified and used for sending notification.
-  </Property>
-  <Property name="name" type="string">
-    User real full name.
-  </Property>
-  <Property name="name_alias" type="string">
-    User name that company choose, used for approval name, etc...
-  </Property>
-  <Property name="role_id" type="objectId">
-    User has role, list of permissions that they had.
-  </Property>
-  <Property name="branchDefault_id" type="objectId">
-    For determine which branch created the form.
-  </Property>
-  <Property name="branchAccess_id" type="objectId">
-    For separate data from other user from other branch.
-  </Property>
-  <Property name="isArchived" type="boolean"></Property>
-  <Property name="createdBy_id" type="objectId">
-    For tracking who create the data.
-  </Property>
-  <Property name="updatedBy_id" type="objectId">
-    For tracking who update the data.
-  </Property>
-  <Property name="createdAt" type="datetime"></Property>
-  <Property name="updatedAt" type="datetime"></Property>
-  <Property name="isActive" type="boolean">
-  Check if user fully activated, if not user cannot log in.
-  </Property>
-  <Property name="warehouseDefault_id" type="objectId">
-    For input transaction related to stock.
-  </Property>
-  <Property name="warehouseAccess_id" type="objectId">
-    For input transaction related to stock.
-  </Property>
-</Properties>
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>_id</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Unique identifier for the user.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>name</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The full name of the user. This field is required.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>email</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>A unique email address for the user. It should be verified. This field is required.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>phoneNumber</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>A unique phone number for the user.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>password</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>User's password. This field is required.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>verified</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Indicates whether the user's email is verified. Default is false.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>role</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The role of the user. It can either be "user" or "admin". Default is "user".</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>fcmToken</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Firebase Cloud Messaging token for the user's device, used for push notifications.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>deviceIds</CompactCell>
+    <CompactCell type>array</CompactCell>
+    <CompactCell>An array of device IDs associated with the user.</CompactCell>
+  </CompactRow>
+</CompactTable>
 
 ---
 
@@ -63,7 +68,11 @@ The user model contains all the information about your users, such as their user
 <Row>
   <Col>
 
-    This endpoint allows you to retrieve a paginated list of all your users.
+    This endpoint allows you to retrieve a paginated list of all your users. Only admins are authorized to access this endpoint.
+
+    ### Edge Cases:
+    - **Unauthorized**: If the request is made by a non-admin user, the server will respond with a `403 Forbidden` status code.
+    - **No Users Found**: If no users exist, the server will respond with a `404 Not Found` status code, or return an empty list.
 
   </Col>
   <Col sticky>
@@ -71,32 +80,10 @@ The user model contains all the information about your users, such as their user
     <CodeGroup title="Request" tag="GET" label="/v1/users">
 
     ```bash {{ title: 'cURL' }}
-    curl -G https://api.protocol.chat/v1/users \
-      -H "Authorization: Bearer {token}" \
-      -d active=true \
+    curl -G {{host}}/api/v1/users \
+      -H "Authorization: Bearer {admin_token}"
     ```
 
-    ```js
-    import ApiClient from '@example/protocol-api'
-
-    const client = new ApiClient(token)
-
-    await client.users.list()
-    ```
-
-    ```python
-    from protocol_api import ApiClient
-
-    client = ApiClient(token)
-
-    client.users.list()
-    ```
-
-    ```php
-    $client = new \Protocol\ApiClient($token);
-
-    $client->users->list();
-    ```
 
     </CodeGroup>
 
@@ -105,12 +92,12 @@ The user model contains all the information about your users, such as their user
       "data": [
         {
           "_id": "WAz8eIbvDR60rouK",
-          "name": "Aini",
-          "email": "aini@gmmail.com",
-          "role_permission": "admin purchase",
-          "branch_access": "Surabaya",
-          "warehouse_access": null,
-          "isActive": true
+          "name": "John Doe",
+          "email": "john.doe@example.com",
+          "phoneNumber": "+123456789",
+          "verified": true,
+          "role": "admin",
+          "deviceIds": ["device123", "device456"]
         },
         {
           "_id": "hSIhXBhNe8X1d8Et"
@@ -130,27 +117,25 @@ The user model contains all the information about your users, such as their user
 <Row>
   <Col>
 
-    This endpoint allows you to add a new user to your user list in Protocol. To add a user, you must provide their Protocol username and phone number.
+    This endpoint allows you to add a new user to your user list in the e-commerce platform. To add a user, you must provide their name, email, and password. Phone number is optional but must be unique if provided.
 
     ### Required attributes
 
     <Properties>
       <Property name="name" type="string">
-        User real full name.
-      </Property>
-      <Property name="name_alias" type="string">
-        user name that company choose, used for approval name, etc...
+        The full name of the user.
       </Property>
       <Property name="email" type="string">
-        Email should be verified and used for sending notification.
+        The unique email address of the user.
       </Property>
-      <Property name="role_id" type="string">
-        User has role, list of permissions that they had.
-      </Property>
-      <Property name="branch_access" type="array">
-        For separate data from other user from other branch.
+      <Property name="password" type="string">
+        User's password.
       </Property>
     </Properties>
+
+    ### Edge Cases:
+    - **Email Already Taken**: If the provided email is already in use, the server will respond with a `409 Conflict` status code.
+    - **Missing Required Fields**: If any required fields are missing, a `400 Bad Request` status code will be returned.
 
   </Col>
   <Col sticky>
@@ -158,53 +143,11 @@ The user model contains all the information about your users, such as their user
     <CodeGroup title="Request" tag="POST" label="/v1/users">
 
     ```bash {{ title: 'cURL' }}
-    curl https://api.protocol.chat/v1/users \
-      -H "Authorization: Bearer {token}" \
-      -d name="Aini" \
-      -d name_alias="Aini" \
-      -d email="aini@gmail.com" \
-      -d role_id="hSIhXBhNe8X1d8Et" \
-      -d branchAccess_id=["hSIhXBhNe8X1d8Et"]
-    ```
-
-    ```js
-    import ApiClient from '@example/protocol-api'
-
-    const client = new ApiClient(token)
-
-    await client.users.create({
-      name: 'Aini',
-      name_alias: 'Aini',
-      email: 'aini@gmail.com',
-      role_id: 'hSIhXBhNe8X1d8Et',
-      branchAccess_id: ["hSIhXBhNe8X1d8Et"]
-    })
-    ```
-
-    ```python
-    from protocol_api import ApiClient
-
-    client = ApiClient(token)
-
-    client.users.create(
-      name="Aini",
-      name_alias="Aini",
-      email="aini@gmail.com",
-      role_id="hSIhXBhNe8X1d8Et",
-      branchAccess_id=["hSIhXBhNe8X1d8Et"],
-    )
-    ```
-
-    ```php
-    $client = new \Protocol\ApiClient($token);
-
-    $client->users->create([
-      'name' => 'Aini',
-      'name_alias' => 'Aini',
-      'email' => 'aini@gmail.com',
-      'role_id' => 'hSIhXBhNe8X1d8Et',
-      'branchAccess_id' => ['hSIhXBhNe8X1d8Et'],
-    ]);
+    curl {{host}}/api/v1/users \
+      -H "Authorization: Bearer {admin_token}" \
+      -d name="John Doe" \
+      -d email="john.doe@example.com" \
+      -d password="securepassword123"
     ```
 
     </CodeGroup>
@@ -212,18 +155,10 @@ The user model contains all the information about your users, such as their user
     ```json {{ title: 'Response' }}
     {
       "_id": "WAz8eIbvDR60rouK",
-      "name": "Aini",
-      "email": "aini@gmail.com",
-      "role": {
-        "_id": "hSIhXBhNe8X1d8Et",
-        "name": "Admin Pembelian"
-      },
-      "branch_access": [
-        "0": {
-          "_id": "hSIhXBhNe8X1d8Et",
-          "name": "Surabaya"
-        }
-      ]
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "role": "user",
+      "verified": false
     }
     ```
 
@@ -237,7 +172,11 @@ The user model contains all the information about your users, such as their user
 <Row>
   <Col>
 
-    This endpoint allows you to retrieve a user by providing their Protocol id. Refer to [the list](#the-user-model) at the top of this page to see which properties are included with user objects.
+    This endpoint allows you to retrieve a user by providing their ID. Only admins can access this endpoint. Refer to [the user model](#the-user-model) at the top of this page for details about user properties.
+
+    ### Edge Cases:
+    - **Unauthorized**: If a non-admin user tries to access this endpoint, the server will return a `403 Forbidden` status code.
+    - **User Not Found**: If no user with the provided ID exists, the server will return a `404 Not Found` status code.
 
   </Col>
   <Col sticky>
@@ -245,28 +184,28 @@ The user model contains all the information about your users, such as their user
     <CodeGroup title="Request" tag="GET" label="/v1/users/WAz8eIbvDR60rouK">
 
     ```bash {{ title: 'cURL' }}
-    curl https://api.protocol.chat/v1/users/WAz8eIbvDR60rouK \
-      -H "Authorization: Bearer {token}"
+    curl {{host}}/api/v1/users/WAz8eIbvDR60rouK \
+      -H "Authorization: Bearer {admin_token}"
     ```
 
     ```js
-    import ApiClient from '@example/protocol-api'
+    import ApiClient from '@example/ecommerce-api'
 
-    const client = new ApiClient(token)
+    const client = new ApiClient(adminToken)
 
     await client.users.get('WAz8eIbvDR60rouK')
     ```
 
     ```python
-    from protocol_api import ApiClient
+    from ecommerce_api import ApiClient
 
-    client = ApiClient(token)
+    client = ApiClient(adminToken)
 
     client.users.get("WAz8eIbvDR60rouK")
     ```
 
     ```php
-    $client = new \Protocol\ApiClient($token);
+    $client = new \Ecommerce\ApiClient($adminToken);
 
     $client->users->get('WAz8eIbvDR60rouK');
     ```
@@ -275,159 +214,16 @@ The user model contains all the information about your users, such as their user
 
     ```json {{ title: 'Response' }}
     {
-      "id": "WAz8eIbvDR60rouK",
-      "name": "Aini",
-      "email": "aini@gmail.com",
-      "role": {
-        "_id": "hSIhXBhNe8X1d8Et",
-        "name": "Admin Pembelian"
-      "branch_access": [
-        "0": {
-          "_id": "hSIhXBhNe8X1d8Et",
-          "name": "Surabaya"
-        }
-      ],
-      "warehouse_access": [
-        "0": {
-          "_id": "hSIhXBhNe8X1d8Et",
-          "name": "Surabaya"
-        }
-      ]
+      "_id": "WAz8eIbvDR60rouK",
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "phoneNumber": "+123456789",
+      "verified": true,
+      "role": "user",
+      "deviceIds": ["device123"],
+      "fcmToken": "fcm_token_example"
     }
     ```
-
-  </Col>
-</Row>
-
----
-
-## Update a user {{ tag: 'PUT', label: '/v1/users/:id' }}
-
-<Row>
-  <Col>
-
-    This endpoint allows you to perform an update on a user. Currently, the only attribute that can be updated on users is the `display_name` attribute which controls how a user appears in your user list in Protocol.
-
-    ### Required attributes
-
-    <Properties>
-      <Property name="role_id" type="string">
-        User has role, list of permissions that they had.
-      </Property>
-      <Property name="branch_access" type="array">
-        For separate data from other user from other branch.
-      </Property>
-    </Properties>
-
-  </Col>
-  <Col sticky>
-
-    <CodeGroup title="Request" tag="PUT" label="/v1/users/WAz8eIbvDR60rouK">
-
-    ```bash {{ title: 'cURL' }}
-    curl -X PUT https://api.protocol.chat/v1/users/WAz8eIbvDR60rouK \
-      -H "Authorization: Bearer {token}" \
-      -d role_id="hSIhXBhNe8X1d8Et" \
-      -d branch_access=["hSIhXBhNe8X1d8Et"]
-    ```
-
-    ```js
-    import ApiClient from '@example/protocol-api'
-
-    const client = new ApiClient(token)
-
-    await client.users.update('WAz8eIbvDR60rouK', {
-        role_id: 'hSIhXBhNe8X1d8Et',
-        branch_access:['hSIhXBhNe8X1d8Et']
-    })
-    ```
-
-    ```python
-    from protocol_api import ApiClient
-
-    client = ApiClient(token)
-
-    client.users.update(
-      "WAz8eIbvDR60rouK",
-      role_id="hSIhXBhNe8X1d8Et"
-      branch_access:['hSIhXBhNe8X1d8Et']
-    )
-    ```
-
-    ```php
-    $client = new \Protocol\ApiClient($token);
-
-    $client->users->update('WAz8eIbvDR60rouK', [
-      'role_id' => 'hSIhXBhNe8X1d8Et',
-      'branch_access' => ['hSIhXBhNe8X1d8Et']
-    ]);
-    ```
-
-    </CodeGroup>
-
-    ```json {{ title: 'Response' }}
-    {
-      "id": "WAz8eIbvDR60rouK",
-      "name": "Aini",
-      "email": "aini@gmail.com",
-      "role": {
-        "_id": "hSIhXBhNe8X1d8Et",
-        "name": "Admin Pembelian"
-      },
-      "branch_access": [
-        "0": {
-          "_id": "hSIhXBhNe8X1d8Et",
-          "name": "Surabaya"
-        }
-      ]
-    }
-    ```
-
-  </Col>
-</Row>
-
----
-
-## Delete a user {{ tag: 'DELETE', label: '/v1/users/:id' }}
-
-<Row>
-  <Col>
-
-    This endpoint allows you to delete users from your user list in Protocol. Note: This will also delete your conversation with the given user.
-
-  </Col>
-  <Col sticky>
-
-    <CodeGroup title="Request" tag="DELETE" label="/v1/users/WAz8eIbvDR60rouK">
-
-    ```bash {{ title: 'cURL' }}
-    curl -X DELETE https://api.protocol.chat/v1/users/WAz8eIbvDR60rouK \
-      -H "Authorization: Bearer {token}"
-    ```
-
-    ```js
-    import ApiClient from '@example/protocol-api'
-
-    const client = new ApiClient(token)
-
-    await client.users.delete('WAz8eIbvDR60rouK')
-    ```
-
-    ```python
-    from protocol_api import ApiClient
-
-    client = ApiClient(token)
-
-    client.users.delete("WAz8eIbvDR60rouK")
-    ```
-
-    ```php
-    $client = new \Protocol\ApiClient($token);
-
-    $client->users->delete('WAz8eIbvDR60rouK');
-    ```
-
-    </CodeGroup>
 
   </Col>
 </Row>

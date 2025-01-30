@@ -1,18 +1,18 @@
 export const description =
-  'In this guide, we will look at how to work with paginated responses when querying the Protocol API'
+  'In this guide, we will look at how to work with paginated responses when querying the products endpoint of the ALX e-commerce app.'
 
 # Pagination
 
-In this guide, we will look at how to work with paginated responses when querying the Protocol API. By default, all responses limit results to ten. However, you can go as high as 100 by adding a `limit` parameter to your requests. If you are using one of the official Protocol API client libraries, you don't need to worry about pagination, as it's all being taken care of behind the scenes. {{ className: 'lead' }}
+In this guide, we will look at how to work with paginated responses when querying the products endpoint of the ALX e-commerce app. By default, all responses limit results to ten products. However, you can go as high as 100 by adding a `limit` parameter to your requests. If you are using one of the client libraries, pagination is handled automatically. {{ className: 'lead' }}
 
-When an API response returns a list of objects, no matter the amount, pagination is supported. In paginated responses, objects are nested in a `data` attribute and have a `has_more` attribute that indicates whether you have reached the end of the last page. You can use the `starting_after` and `endding_before` query parameters to browse pages.
+When an API response returns a list of products, no matter the amount, pagination is supported. In paginated responses, products are nested in a `data` attribute and have a `has_more` attribute that indicates whether you have reached the end of the last page. You can use the `starting_after` and `ending_before` query parameters to browse pages.
 
 ## Example using cursors
 
 <Row>
   <Col>
 
-    In this example, we request the page that starts after the conversation with id `s4WycXedwhQrEFuM`. As a result, we get a list of three conversations and can tell by the `has_more` attribute that we have reached the end of the resultset.
+    In this example, we request the page that starts after the product with id `prod12345`. As a result, we get a list of three products and can tell by the `has_more` attribute that we have reached the end of the result set.
 
     <Properties>
       <Property name="starting_after" type="string">
@@ -30,9 +30,9 @@ When an API response returns a list of objects, no matter the amount, pagination
   <Col>
 
     ```bash {{ title: 'Manual pagination using cURL' }}
-    curl -G https://api.protocol.chat/v1/conversations \
+    curl -G https://api.alx-ecommerce.com/v1/products \
       -H "Authorization: Bearer {token}" \
-      -d starting_after="s4WycXedwhQrEFuM" \
+      -d starting_after="prod12345" \
       -d limit=10
     ```
 
@@ -41,16 +41,22 @@ When an API response returns a list of objects, no matter the amount, pagination
       "has_more": false,
       "data": [
         {
-          "id": "WAz8eIbvDR60rouK",
-          // ...
+          "id": "prod67890",
+          "name": "Product 1",
+          "price": 19.99,
+          "category": "Electronics"
         },
         {
-          "id": "hSIhXBhNe8X1d8Et"
-          // ...
+          "id": "prod54321",
+          "name": "Product 2",
+          "price": 49.99,
+          "category": "Home Appliances"
         },
         {
-          "id": "fbwYwpi9C2ybt6Yb"
-          // ...
+          "id": "prod98765",
+          "name": "Product 3",
+          "price": 29.99,
+          "category": "Books"
         }
       ]
     }

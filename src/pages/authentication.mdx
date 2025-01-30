@@ -1,41 +1,228 @@
 export const description =
-  'In this guide, we’ll look at how authentication works. Protocol offers two ways to authenticate your API requests: Basic authentication and OAuth2 with a token.'
+  'This section outlines the authentication process in the ALX e-commerce app, including login, registration with OTP verification, and password reset.'
 
 # Authentication
 
-You'll need to authenticate your requests to access any of the endpoints in the Protocol API. In this guide, we'll look at how authentication works. Protocol offers two ways to authenticate your API requests: Basic authentication and OAuth2 with a token — OAuth2 is the recommended way. {{ className: 'lead' }}
+Authentication is a critical part of accessing features in the ALX e-commerce app. In this section, we will cover the login methods, registration with OTP, and password reset functionality.
 
-## Basic authentication
+## The Authentication Model
 
-With basic authentication, you use your username and password to authenticate your HTTP requests. Unless you have a very good reason, you probably shouldn't use basic auth. Here's how to authenticate using cURL:
+The authentication process in the ALX app includes methods for logging in using either an email or a phone number, as well as a registration flow that involves OTP verification.
 
-```bash {{ title: 'Example request with basic auth' }}
-curl https://api.protocol.chat/v1/conversations \
-  -u username:password
-```
+---
 
-Please don't commit your Protocol password to GitHub!
+## Login {{ tag: 'POST', label: '/v1/auth/login' }}
 
-## OAuth2 with bearer token
+<Row>
+  <Col>
 
-The recommended way to authenticate with the Protocol API is by using OAuth2. When establishing a connection using OAuth2, you will need your access token — you will find it in the [Protocol dashboard](#) under API settings. Here's how to add the token to the request header using cURL:
+    This endpoint allows users to log in using either their email or phone number and password.
 
-```bash {{ title: 'Example request with bearer token' }}
-curl https://api.protocol.chat/v1/conversations \
-  -H "Authorization: Bearer {token}"
-```
+    ### Edge Cases:
+    - **Invalid Credentials**: If the provided credentials are incorrect, a `401 Unauthorized` status code will be returned.
 
-Always keep your token safe and reset it if you suspect it has been compromised.
+  </Col>
+  <Col sticky>
 
-## Using an SDK
+    <CodeGroup title="Request" tag="POST" label="/v1/auth/login">
 
-If you use one of our official SDKs, you won't have to worry about any of the above — fetch your access token from the [Protocol dashboard](#) under API settings, and the client library will take care of the rest. All the client libraries use OAuth2 behind the scenes.
+    ```bash {{ title: 'Login with email and password' }}
+    curl -X POST https://api.alx-ecommerce.com/v1/auth/login \
+        -H "Content-Type: application/json" \
+        -d '{"email": "user@example.com", "password": "yourpassword"}'
+    ```
 
-<div className="not-prose">
-  <Button
-    href="/sdks"
-    variant="text"
-    arrow="right"
-    children="Check out our list of first-party SDKs"
-  />
-</div>
+    </CodeGroup>
+
+    <CodeGroup title="Request" tag="POST" label="/v1/auth/login">
+
+    ```bash {{ title: 'Login with phone number and password' }}
+    curl -X POST https://api.alx-ecommerce.com/v1/auth/login \
+        -H "Content-Type: application/json" \
+        -d '{"phoneNumber": "+1234567890", "password": "yourpassword"}'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "status": 200,
+      "message": "Login successful",
+      "data": {
+        "userId": "unique_user_id",
+        "authToken": "user_auth_token"
+      }
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Registration with OTP {{ tag: 'POST', label: '/v1/auth/send-otp' }}
+
+<Row>
+  <Col>
+
+    This endpoint initiates the registration process by sending an OTP to the user's email or phone number for verification.
+
+    ### Edge Cases:
+    - **Invalid Auth ID**: If the provided email or phone number is incorrect, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/v1/auth/send-otp">
+
+    ```bash {{ title: 'Send OTP to email or phone number' }}
+    curl -X POST https://api.alx-ecommerce.com/v1/auth/send-otp \
+        -H "Content-Type: application/json" \
+        --data '{"authId": "user@example.com"}'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "status": 200,
+      "message": "OTP has been sent to user@example.com",
+      "authId": "user@example.com",
+      "otpExpiry": "2025-01-21T12:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Verify OTP {{ tag: 'POST', label: '/v1/auth/verify-otp' }}
+
+<Row>
+  <Col>
+
+    This endpoint verifies the OTP sent to the user. Once verified, the user can proceed with registration.
+
+    ### Edge Cases:
+    - **Invalid OTP**: If the OTP is incorrect or expired, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/v1/auth/verify-otp">
+
+    ```bash {{ title: 'Verify OTP request' }}
+    curl -X POST https://api.alx-ecommerce.com/v1/auth/verify-otp \
+        -H "Content-Type: application/json" \
+        --data '{"authId": "user@example.com", "otp": "123456"}'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "status": 200,
+      "message": "OTP verified successfully",
+      "data": {
+        "authId": "user@example.com",
+        "verifiedAt": "2025-01-21T12:30:00Z"
+      }
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Register Account {{ tag: 'POST', label: '/v1/auth/register' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows the user to complete the registration process after OTP verification by providing their details such as name, email, phone number, and password.
+
+    ### Required Attributes
+
+    <Properties>
+      <Property name="name" type="string">
+        Full name of the user.
+      </Property>
+      <Property name="email" type="string">
+        Email address of the user.
+      </Property>
+      <Property name="phoneNumber" type="string">
+        Phone number of the user.
+      </Property>
+      <Property name="password" type="string">
+        Password for the user's account.
+      </Property>
+    </Properties>
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/v1/auth/register">
+
+    ```bash {{ title: 'Example registration request' }}
+    curl -X POST https://api.alx-ecommerce.com/v1/auth/register \
+        -H "Content-Type: application/json" \
+        --data '{"name": "John Doe", "email": "johndoe@example.com", "phoneNumber": "+1234567890", "password": "securepassword"}'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "status": 201,
+      "message": "Account created successfully",
+      "data": {
+        "userId": "new_user_id",
+        "authToken": "new_user_auth_token"
+      }
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Password Reset {{ tag: 'POST', label: '/v1/auth/reset-password' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows the user to reset their password by providing either their email or phone number.
+
+    ### Edge Cases:
+    - **Invalid Auth ID**: If the provided email or phone number is not registered, a `404 Not Found` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/v1/auth/reset-password">
+
+    ```bash {{ title: 'Password reset request' }}
+    curl -X POST https://api.alx-ecommerce.com/v1/auth/reset-password \
+        -H "Content-Type: application/json" \
+        --data '{"email": "user@example.com"}'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "status": 200,
+      "message": "Password reset link sent to user@example.com"
+    }
+    ```
+
+  </Col>
+</Row>
+
+## Notes
+
+- Always ensure that sensitive information such as passwords and tokens are stored securely.
+- Never hard-code sensitive data like passwords or access tokens into your source code.

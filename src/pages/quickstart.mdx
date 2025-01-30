@@ -1,101 +1,138 @@
-export const description =
-  'This guide will get you all set up and ready to use the Protocol API. We’ll cover how to get started an API client and how to make your first API request.'
+# Node.js Express App Setup Guide
 
-# Quickstart
+## Description
+This guide will help you set up and run the Node.js Express application. Follow the steps outlined below to configure the environment, install dependencies, and start the application.
 
-This guide will get you all set up and ready to use the Protocol API. We'll cover how to get started using one of our API clients and how to make your first API request. We'll also look at where to go next to find all the information you need to take full advantage of our powerful REST API. {{ className: 'lead' }}
+## Prerequisites
+Ensure you have the following installed on your system:
+
+- [Node.js](https://nodejs.org/) (version 16.x or higher recommended)
+- [npm](https://www.npmjs.com/) (comes with Node.js) or [yarn](https://yarnpkg.com/)
+- [MongoDB](https://www.mongodb.com/) (local or cloud-based, such as MongoDB Atlas)
+- A text editor or IDE (e.g., [VSCode](https://code.visualstudio.com/))
+- [cURL](https://curl.se/) (for testing API endpoints, optional)
+
+## Environment Setup
+1. Clone the repository:
+   ```bash
+   unzip  project
+   cd project
+   cp .env.example .env
+   ```
+
+2. Edit `.env` file in the root directory and populate it with the following variables. Replace placeholder values with your actual configuration:
+
+   ```bash
+   # Global
+   APP_KEY=your_app_key
+   ENCRYPTION_KEY=your_encryption_key
+
+   # MongoDB
+   DATABASE_URL=mongodb+srv://<username>:<password>@cluster.mongodb.net/your-database
+
+   # Emails
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_SECURE=false
+   CLIENT_USER= yourmai@gmail.com
+   CLIENT_PASS= your app pass
+
+   # SMS Service
+   SMS_USERNAME=your_sms_username
+   SMS_API_KEY=your_sms_api_key
+   SMS_API_KEY1=your_sms_api_key1
+
+   # Stripe
+   PUBLISHABLE_KEY=your_stripe_publishable_key
+   SECRET_KEY=your_stripe_secret_key
+
+   # Flutterwave
+   FLW_PUBLIC_KEY=your_flutterwave_public_key
+   FLW_SECRET_KEY=your_flutterwave_secret_key
+   FLW_ENCRYPTION_KEY=your_flutterwave_encryption_key
+
+   # Cloudinary
+   CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+   CLOUDINARY_API_KEY=your_cloudinary_api_key
+   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+   ```
 
 <Note>
-  Before you can make requests to the Protocol API, you will need to grab your
-  API key from your dashboard. You find it under [Settings &raquo; API](#).
+ The environment variables set in `.env` can be overridden by environments created under the `/api/v1/integrations` endpoint.  
+ If you've already set variables in `.env`, you can update the secrets via `/integrations` using HTTPS.  
+ Always use **HTTPS** for better security. We have implemented encryption for secrets stored via HTTPS for enhanced security.
 </Note>
 
-## Choose your client
+3. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-Before making your first API request, you need to pick which API client you will use. In addition to good ol' cURL HTTP requests, Protocol offers clients for JavaScript, Python, and PHP. In the following example, you can see how to install each client.
+## Running the Application
 
-<CodeGroup>
+1. Start the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-```bash {{ title: 'cURL' }}
-# cURL is most likely already installed on your machine
+2. Access the application in your browser at:
+   ```
+   http://localhost:8080
+   ```
+
+## Quickstart Guide for API Usage
+
+### Setting Up an API Client
+This application provides a REST API. To make API requests, you need an API client such as cURL, Postman, or any HTTP client library.
+
+#### Checking cURL Installation
+```bash
 curl --version
 ```
+If not installed, follow [these instructions](https://curl.se/download.html).
 
-```bash {{ language: 'js' }}
-# Install the Protocol JavaScript SDK
-npm install @example/protocol-api --save
+### Making Your First API Request
+Using cURL, make a request to fetch a list of products:
+
+```bash
+curl -G http://localhost:8080/api/v1/products \
+  -d limit=10 \
+  -d page=1 \
+  -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
-```bash {{ language: 'python' }}
-# Install the Protocol Python SDK
-pip install protocol_api
-```
+### Notes
+- Replace `YOUR_API_KEY` with the value of your API key.
+- Ensure the server is running locally or on your deployment environment.
 
-```bash {{ language: 'php' }}
-# Install the Protocol PHP SDK
-composer require protocol/sdk
-```
+### Endpoints Documentation
+Refer to the following links for more details:
+- [Products Endpoint](http://localhost:8080/docs/products)
+- [Error Messages](http://localhost:8080/docs/errors)
 
-</CodeGroup>
+## Deployment
 
-<div className="not-prose">
-  <Button
-    href="/sdks"
-    variant="text"
-    arrow="right"
-    children="Check out our list of first-party SDKs"
-  />
-</div>
+### Using Docker
+1. Ensure Docker is installed and running on your system.
+2. Build and run the container:
+   ```bash
+   docker build -t your-app-name .
+   docker run -p 8080:8080 your-app-name
+   ```
 
-## Making your first API request
+### On a Cloud Platform
+- Deploy on platforms like [Heroku](https://www.heroku.com/), [AWS](https://aws.amazon.com/), or [Vercel](https://vercel.com/).
+- Set environment variables in the platform’s dashboard.
 
-After picking your preferred client, you are ready to make your first call to the Protocol API. Below, you can see how to send a GET request to the Conversations endpoint to get a list of all your conversations. In the cURL example, results are limited to ten conversations, the default page length for each client.
+## Troubleshooting
 
-<CodeGroup tag="GET" label="/v1/conversations">
+### Common Issues
+- **Database Connection Error:** Verify your `DATABASE_URL` in the `.env` file.
+- **Environment Variables Not Loaded:** Ensure you have created the `.env` file and installed [dotenv](https://www.npmjs.com/package/dotenv).
+- **API Key Missing:** Include your API key in the request header as a Bearer Token.
 
-```bash {{ title: 'cURL' }}
-curl -G https://api.protocol.chat/v1/conversations \
-  -H "Authorization: Bearer {token}" \
-  -d limit=10
-```
-
-```js
-import ApiClient from '@example/protocol-api'
-
-const client = new ApiClient(token)
-
-await client.conversations.list()
-```
-
-```python
-from protocol_api import ApiClient
-
-client = ApiClient(token)
-
-client.conversations.list()
-```
-
-```php
-$client = new \Protocol\ApiClient($token);
-
-$client->conversations->list();
-```
-
-</CodeGroup>
-
-<div className="not-prose">
-  <Button
-    href="/conversations"
-    variant="text"
-    arrow="right"
-    children="Read the docs for the Conversations endpoint"
-  />
-</div>
-
-## What's next?
-
-Great, you're now set up with an API client and have made your first request to the API. Here are a few links that might be handy as you venture further into the Protocol API:
-
-- [Grab your API key from the Protocol dashboard](#)
-- [Check out the Conversations endpoint](/conversations)
-- [Learn about the different error messages in Protocol](/errors)
+For further assistance, check the application logs or contact the support team.

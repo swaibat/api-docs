@@ -2,6 +2,7 @@ import clsx from 'clsx'
 
 const variantStyles = {
   medium: 'rounded-lg px-1.5 ring-1 ring-inset',
+  small: 'rounded-sm px-2.5 py-0 ring-inset',
 }
 
 const colorStyles = {
@@ -41,6 +42,7 @@ const valueColorMap = {
 
 export function Tag({
   children,
+  style,
   variant = 'medium',
   color = valueColorMap[children.toLowerCase()] ?? 'emerald',
 }) {
@@ -49,8 +51,9 @@ export function Tag({
       className={clsx(
         'font-mono text-[0.625rem] font-semibold leading-6',
         variantStyles[variant],
-        colorStyles[color][variant]
+        colorStyles[color][variant],
       )}
+      style={style}
     >
       {children}
     </span>

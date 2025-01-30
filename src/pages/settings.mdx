@@ -1,0 +1,359 @@
+import { CompactTable, CompactRow, CompactCell } from '@/components/Table'
+
+export const description =
+  'This section outlines the various endpoints for managing application settings, including retrieving and updating settings details.'
+
+# Application Settings
+
+Managing application settings is crucial for configuring the behavior and appearance of the platform. This section discusses the endpoints for retrieving and updating application settings details.
+
+## Settings Model
+
+Each setting in the platform is represented by a model that contains various attributes such as business information, policies, contact details, and other configurations. Below is a breakdown of the properties of the settings model.
+
+### Properties
+
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>name</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The name of the setting, typically 'APP_SETTINGS'.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>fileId</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Reference to a file (optional).</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>businessName</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The business name.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>businessCategory</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The category of the business.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>businessDescription</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>A brief description of the business.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>address</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The physical address of the business.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>addressDescription</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>A description of the business address.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>locationName</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The name of the location.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>email</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The contact email address.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>phone</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The contact phone number.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>showTermsAndConditions</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Whether to show the Terms and Conditions section.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>showPrivacyPolicy</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Whether to show the Privacy Policy section.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>showReturnPolicy</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Whether to show the Return Policy section.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>showDigitalItemPolicy</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Whether to show the Digital Item Policy section.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>showContactUs</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Whether to show the Contact Us section.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>sendOrderConfirmationEmailAutomatically</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Whether to send order confirmation emails automatically.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>sendShippingConfirmationEmailAutomatically</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Whether to send shipping confirmation emails automatically.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>sendReadyForPickupEmailAutomatically</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Whether to send ready for pickup emails automatically.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>showStoreLocation</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Whether to show the store location.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>siteLanguage</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The default language of the site.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>storeLocation</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The location of the store (e.g., 'Global').</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>currency</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The currency used for transactions.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>storageType</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The type of storage used for files (e.g., 'local', 'google', 'cloudinary').</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>storageOptions</CompactCell>
+    <CompactCell type>array[string]</CompactCell>
+    <CompactCell>List of available storage options.</CompactCell>
+  </CompactRow>
+</CompactTable>
+
+
+---
+
+## Get Settings {{ tag: 'GET', label: '/v1/settings' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to retrieve the application settings. The response includes details such as business information, policies, contact details, and other configurations.
+
+    ### Edge Cases:
+    - **No Settings Found**: If no settings exist, the server will return an empty object with a `200 OK` status code.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/v1/settings">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G {{host}}/api/v1/settings \
+      -H "Authorization: Bearer {user_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "data": {
+        "name": "APP_SETTINGS",
+        "businessName": "My Business",
+        "businessCategory": "E-commerce",
+        "businessDescription": "An online store selling products.",
+        "address": "123 Business St.",
+        "addressDescription": "Main office location.",
+        "locationName": "Headquarters",
+        "email": "contact@mybusiness.com",
+        "phone": "+1234567890",
+        "showTermsAndConditions": true,
+        "showPrivacyPolicy": true,
+        "showReturnPolicy": true,
+        "showDigitalItemPolicy": true,
+        "showContactUs": true,
+        "sendOrderConfirmationEmailAutomatically": true,
+        "sendShippingConfirmationEmailAutomatically": true,
+        "sendReadyForPickupEmailAutomatically": true,
+        "showStoreLocation": false,
+        "siteLanguage": "English",
+        "storeLocation": "Global",
+        "currency": "USD",
+        "storageType": "local",
+        "storageOptions": ["local", "google", "cloudinary"]
+      }
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Update Settings {{ tag: 'PUT', label: '/v1/settings' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to update the application settings. You can update attributes such as business information, policies, contact details, and storage configurations.
+
+    ### Required Attributes
+
+    <Properties>
+      <Property name="businessName" type="string">
+        The business name (optional).
+      </Property>
+      <Property name="businessCategory" type="string">
+        The category of the business (optional).
+      </Property>
+      <Property name="businessDescription" type="string">
+        A brief description of the business (optional).
+      </Property>
+      <Property name="address" type="string">
+        The physical address of the business (optional).
+      </Property>
+      <Property name="addressDescription" type="string">
+        A description of the business address (optional).
+      </Property>
+      <Property name="email" type="string">
+        The contact email address (optional).
+      </Property>
+      <Property name="phone" type="string">
+        The contact phone number (optional).
+      </Property>
+      <Property name="showTermsAndConditions" type="boolean">
+        Whether to show the Terms and Conditions section (optional).
+      </Property>
+      <Property name="showPrivacyPolicy" type="boolean">
+        Whether to show the Privacy Policy section (optional).
+      </Property>
+      <Property name="showReturnPolicy" type="boolean">
+        Whether to show the Return Policy section (optional).
+      </Property>
+      <Property name="showDigitalItemPolicy" type="boolean">
+        Whether to show the Digital Item Policy section (optional).
+      </Property>
+      <Property name="showContactUs" type="boolean">
+        Whether to show the Contact Us section (optional).
+      </Property>
+      <Property name="sendOrderConfirmationEmailAutomatically" type="boolean">
+        Whether to send order confirmation emails automatically (optional).
+      </Property>
+      <Property name="sendShippingConfirmationEmailAutomatically" type="boolean">
+        Whether to send shipping confirmation emails automatically (optional).
+      </Property>
+      <Property name="sendReadyForPickupEmailAutomatically" type="boolean">
+        Whether to send ready for pickup emails automatically (optional).
+      </Property>
+      <Property name="showStoreLocation" type="boolean">
+        Whether to show the store location (optional).
+      </Property>
+      <Property name="siteLanguage" type="string">
+        The default language of the site (optional).
+      </Property>
+      <Property name="storeLocation" type="string">
+        The location of the store (optional).
+      </Property>
+      <Property name="currency" type="string">
+        The currency used for transactions (optional).
+      </Property>
+      <Property name="storageType" type="string">
+        The type of storage used for files (optional).
+      </Property>
+      <Property name="storageOptions" type="array[string]">
+        List of available storage options (optional).
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Invalid Data**: If any provided data is invalid, a `400 Bad Request` status code will be returned.
+    - **Missing Required Fields**: If any required fields are missing, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="PUT" label="/v1/settings">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X PUT {{host}}/api/v1/settings \
+      -H "Authorization: Bearer {user_token}" \
+      --data '{
+        "businessName": "Updated Business Name",
+        "email": "updated@business.com",
+        "currency": "EUR"
+      }'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "data": {
+        "name": "APP_SETTINGS",
+        "businessName": "Updated Business Name",
+        "businessCategory": "E-commerce",
+        "businessDescription": "An updated business description.",
+        "address": "123 Business St.",
+        "addressDescription": "Main office location.",
+        "locationName": "Headquarters",
+        "email": "updated@business.com",
+        "phone": "+1234567890",
+        "showTermsAndConditions": true,
+        "showPrivacyPolicy": true,
+        "showReturnPolicy": true,
+        "showDigitalItemPolicy": true,
+        "showContactUs": true,
+        "sendOrderConfirmationEmailAutomatically": true,
+        "sendShippingConfirmationEmailAutomatically": true,
+        "sendReadyForPickupEmailAutomatically": true,
+        "showStoreLocation": false,
+        "siteLanguage": "English",
+        "storeLocation": "Global",
+        "currency": "EUR",
+        "storageType": "local",
+        "storageOptions": ["local", "google", "cloudinary"]
+      }
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Reset Settings {{ tag: 'DELETE', label: '/v1/settings' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to reset the application settings to their default values. It will revert any changes made to the settings back to the original configuration.
+
+    ### Edge Cases:
+    - **No Settings to Reset**: If no settings exist, the server will return a `404 Not Found` status code.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="DELETE" label="/v1/settings">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X DELETE {{host}}/api/v1/settings \
+      -H "Authorization: Bearer {admin_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "message": "Settings have been reset to default values."
+    }
+    ```
+
+  </Col>
+</Row>

@@ -1,0 +1,502 @@
+import { CompactTable, CompactRow, CompactCell } from '@/components/Table'
+
+export const description =
+  'This section of the documentation will guide you through how to manage products in your e-commerce platform programmatically.'
+
+# Products
+
+The **products** section is crucial for managing the items available for sale on your e-commerce platform. This guide covers endpoints for listing, creating, updating, and deleting products. We'll also cover edge cases such as invalid data, unauthorized access, and product not found scenarios.
+
+## Product model
+
+The product model includes various attributes like title, price, description, and more. The model also supports features like product variants, discounts, installment plans, and free shipping.
+
+### Properties
+
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>_id</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Unique identifier for the product.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>title</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The title of the product. This field is required.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>price</CompactCell>
+    <CompactCell type>number</CompactCell>
+    <CompactCell>The price of the product. This field is required.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>description</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>A detailed description of the product. This field is required.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>features</CompactCell>
+    <CompactCell type>object</CompactCell>
+    <CompactCell>The features of the product (optional).</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>specifications</CompactCell>
+    <CompactCell type>object</CompactCell>
+    <CompactCell>The specifications of the product (optional).</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>variants</CompactCell>
+    <CompactCell type>array</CompactCell>
+    <CompactCell>A list of product variants (optional).</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>brandId</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>The brand associated with the product.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>collectionId</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>The collection the product belongs to.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>shopId</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>The shop that sells the product.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>userId</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>The user who created the product.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>categoryId</CompactCell>
+    <CompactCell type>array</CompactCell>
+    <CompactCell>An array of categories the product belongs to.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>thumbnail</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>The product thumbnail image. The first image in the product's image list will appear as the thumbnail.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>files</CompactCell>
+    <CompactCell type>array</CompactCell>
+    <CompactCell>An array of file IDs related to the product. These files are referenced from the Files model and may include images, documents, or videos.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>discount</CompactCell>
+    <CompactCell type>object</CompactCell>
+    <CompactCell>The discount applied to the product (optional).</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>views</CompactCell>
+    <CompactCell type>number</CompactCell>
+    <CompactCell>The number of views the product has received.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>acceptInstallments</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Indicates whether installments are accepted for the product.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>installments</CompactCell>
+    <CompactCell type>object</CompactCell>
+    <CompactCell>Details of the installment plan, if applicable.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>freeShipping</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Indicates whether the product has free shipping.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>isLocalStore</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Indicates whether the product is from a local store.</CompactCell>
+  </CompactRow>
+</CompactTable>
+
+---
+
+### Query Parameters
+
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>categoryId</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Filter products by category ID.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>brandId</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Filter products by brand ID.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>minPrice</CompactCell>
+    <CompactCell type>number</CompactCell>
+    <CompactCell>Filter products with a price greater than or equal to this value.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>maxPrice</CompactCell>
+    <CompactCell type>number</CompactCell>
+    <CompactCell>Filter products with a price less than or equal to this value.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>isActive</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Filter products by their active status.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>freeShipping</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Filter products that offer free shipping.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>sortBy</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Sort the results by a field (e.g., `price`, `createdAt`, `views`).</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>sortOrder</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Sort order (`asc` for ascending, `desc` for descending). Default is `desc`.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>page</CompactCell>
+    <CompactCell type>number</CompactCell>
+    <CompactCell>The page number for pagination. Default is `1`.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>limit</CompactCell>
+    <CompactCell type>number</CompactCell>
+    <CompactCell>The number of products per page. Default is `10`.</CompactCell>
+  </CompactRow>
+</CompactTable>
+
+## Get all products {{ tag: 'GET', label: '/v1/products' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to retrieve a paginated list of all products available in your e-commerce platform. The list can be filtered by category, brand, and more.
+
+    ### Edge Cases:
+    - **Unauthorized**: If a non-admin user tries to access this endpoint, they will receive a `403 Forbidden` error.
+    - **No Products Found**: If no products match the filters or exist, the server will return a `404 Not Found` status code or an empty array.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/v1/products">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G {{host}}/api/v1/products \
+      -d "categoryId=65b12adad41ea8eb64ba1098" \
+      -d "brandId=65b12adad41ea8eb64ba1100" \
+      -d "minPrice=50" \
+      -d "maxPrice=500" \
+      -d "isActive=true" \
+      -d "freeShipping=true" \
+      -d "sortBy=price" \
+      -d "sortOrder=asc" \
+      -d "page=1" \
+      -d "limit=10"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "docs": [
+        {
+            "_id": "6780d867ee24d31843089649",
+            "title": "this is the new title",
+            "price": 900,
+            "description": "new description goes here",
+            "files": [],
+            "discount": {
+                "type": "PERCENT",
+                "value": 0
+            },
+            "views": 0,
+            "acceptInstallments": false,
+            "installments": null,
+            "freeShipping": false,
+            "isLocalStore": false,
+            "variants": [],
+            "createdAt": "2025-01-10T08:20:55.291Z",
+            "averageRating": null,
+            "ratingCount": 0,
+            "categoryName": "Babies & Kids",
+            "currency": {
+                "symbol": "$",
+                "name": "US Dollar",
+                "symbol_native": "$",
+                "decimal_digits": 2,
+                "rounding": 0,
+                "code": "USD",
+                "name_plural": "US dollars"
+            },
+            "formattedPrice": "$ 900.00"
+        },
+      ]
+      ...
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Get a single product {{ tag: 'GET', label: '/v1/products/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to retrieve a product by its unique ID. It includes all the details of the product, including its price, description, variants, and discount information.
+
+    ### Edge Cases:
+    - **Product Not Found**: If a product with the provided ID does not exist, the server will return a `404 Not Found` status code.
+    - **Unauthorized**: If an unauthorized user attempts to access this endpoint, they will receive a `403 Forbidden` status code.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/v1/products/product123">
+
+    ```bash {{ title: 'cURL' }}
+    curl {{host}}/api/v1/products/product123 \
+      -H "Authorization: Bearer {admin_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "6780d867ee24d31843089649",
+      "title": "this is the new title",
+      "price": 900,
+      "description": "new description goes here",
+      "categoryId": [
+          "65b12adad41ea8eb64ba1098",
+          "65b12adad41ea8eb64ba1103"
+      ],
+      "files": [],
+      "discount": {
+          "type": "PERCENT",
+          "value": 0
+      },
+      "views": 0,
+      "acceptInstallments": false,
+      "installments": null,
+      "freeShipping": false,
+      "isLocalStore": false,
+      "variants": [],
+      "createdAt": "2025-01-10T08:20:55.291Z",
+      "categoryList": [
+          {
+              "_id": "65b12adad41ea8eb64ba1098",
+              "categoryId": 98,
+              "name": "Babies & Kids",
+              "slug": "babies_kids",
+              "thumbnail": "http://localhost:8080/assets/categories/babies_kids.png",
+              "status": "PUBLISHED",
+              "parentId": 0,
+              "__v": 0,
+              "createdAt": "2025-01-07T15:38:13.643Z",
+              "updatedAt": "2025-01-07T15:38:13.643Z"
+          },
+          {
+              "_id": "65b12adad41ea8eb64ba1103",
+              "categoryId": 103,
+              "name": "Children's Gear & Safety",
+              "slug": "childrens_gear_safety",
+              "thumbnail": "",
+              "status": "PUBLISHED",
+              "parentId": 98,
+              "__v": 0,
+              "createdAt": "2025-01-07T15:38:13.644Z",
+              "updatedAt": "2025-01-07T15:38:13.644Z"
+          }
+      ],
+      "reviews": {
+          "docs": [],
+          "totalDocs": 0,
+          "limit": 3,
+          "page": 1,
+          "totalPages": 1,
+          "pagingCounter": 1,
+          "hasPrevPage": false,
+          "hasNextPage": false,
+          "prevPage": null,
+          "nextPage": null
+      },
+      "currency": {
+          "symbol": "$",
+          "name": "US Dollar",
+          "symbol_native": "$",
+          "decimal_digits": 2,
+          "rounding": 0,
+          "code": "USD",
+          "name_plural": "US dollars"
+      },
+      "formattedPrice": "$ 900.00"
+
+    }
+```
+
+  </Col>
+</Row>
+
+---
+
+## Create a product {{ tag: 'POST', label: '/v1/products' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to create a new product in the platform. You must provide the required fields like title, price, and description. Other fields like variants, features, and specifications are optional.
+
+    ### Required attributes
+
+    <Properties>
+      <Property name="title" type="string">
+        The title of the product.
+      </Property>
+      <Property name="price" type="number">
+        The price of the product.
+      </Property>
+      <Property name="description" type="string">
+        A description of the product.
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Missing Required Fields**: If any required field is missing, the server will return a `400 Bad Request` error.
+    - **Invalid Price**: If the price is less than or equal to zero, the server will return a `400 Bad Request` error.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/v1/products">
+
+    ```bash {{ title: 'cURL' }}
+    curl {{host}}/api/v1/products \
+      -H "Authorization: Bearer {admin_token}" \
+      -d {
+            "title": "New Product",
+            "price": 100,
+            "description": "A new product",
+            "discount": {
+                "type": "PERCENT",
+                "value": 0
+            },
+            "files": [
+               "fileid1",
+                "fileId2"
+            ]
+            "categoryId": [
+                "categoryId1",
+                "categoryId2"
+            ]
+            "acceptInstallments": false,
+            "freeShipping": false,
+            "isLocalStore": false
+          }
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "newProduct123",
+      "title": "New Product",
+      "price": 100,
+      "description": "A new product",
+      "views": 0,
+      "acceptInstallments": false,
+      "freeShipping": false,
+      "isLocalStore": false
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Update a product {{ tag: 'PUT', label: '/v1/products/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to update an existing product. You can update the title, price, description, and other optional fields.
+
+    ### Edge Cases:
+    - **Product Not Found**: If the provided product ID does not exist, the server will return a `404 Not Found` status code.
+    - **Invalid Data**: If the data provided is invalid (e.g., negative price, missing required fields), the server will return a `400 Bad Request` status code.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="PUT" label="/v1/products/product123">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X PUT {{host}}/api/v1/products/product123 \
+      -H "Authorization: Bearer {admin_token}" \
+      -d {
+        "title": "Updated Product",
+        "price": 120
+       }
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "product123",
+      "title": "Updated Product",
+      "price": 120,
+      "description": "A great updated product",
+      "views": 51
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Delete a product {{ tag: 'DELETE', label: '/v1/products/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to delete a product by its unique ID.
+
+    ### Edge Cases:
+    - **Product Not Found**: If the product does not exist, the server will return a `404 Not Found` status code.
+    - **Unauthorized Access**: If the user does not have permission to delete the product, they will receive a `403 Forbidden` status code.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="DELETE" label="/v1/products/product123">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X DELETE {{host}}/api/v1/products/product123 \
+      -H "Authorization: Bearer {admin_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "status": 200,
+      "message": "Product deleted successfully"
+    }
+    ```
+
+  </Col>
+</Row>

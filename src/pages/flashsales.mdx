@@ -1,0 +1,167 @@
+import { CompactTable, CompactRow, CompactCell } from '@/components/Table'
+
+export const description =
+  'This section outlines the various endpoints for managing flash sales, including retrieving and updating flash sale details.'
+
+# Flash Sales
+
+Managing flash sales is a crucial feature for an e-commerce platform, allowing businesses to offer limited-time discounts to attract customers. In this section, we will discuss the endpoints for retrieving and updating flash sale details.
+
+## Flash Sale Model
+
+Each flash sale in the platform is represented by a model that contains attributes like the sale name, products involved, discount percentage, start and end times, and status. Below is a breakdown of the properties of the flash sale model.
+
+### Properties
+
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>_id</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Unique identifier for the flash sale.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>name</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Name of the flash sale.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>products</CompactCell>
+    <CompactCell type>array[objectId]</CompactCell>
+    <CompactCell>List of product IDs included in the flash sale.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>discount</CompactCell>
+    <CompactCell type>number</CompactCell>
+    <CompactCell>Discount percentage applied during the flash sale.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>startAt</CompactCell>
+    <CompactCell type>datetime</CompactCell>
+    <CompactCell>The start date and time of the flash sale.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>endAt</CompactCell>
+    <CompactCell type>datetime</CompactCell>
+    <CompactCell>The end date and time of the flash sale.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>status</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Status of the flash sale (e.g., 'active', 'inactive').</CompactCell>
+  </CompactRow>
+</CompactTable>
+
+---
+
+## Get Flash Sales {{ tag: 'GET', label: '/v1/flashsales' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to retrieve the list of all flash sales. The response includes details such as sale name, products, discount percentage, and the time frame of the sale.
+
+    ### Edge Cases:
+    - **No Flash Sales Found**: If no flash sales exist, the server will return an empty list with a `200 OK` status code.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/v1/flashsales">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G {{host}}/api/v1/flashsales \
+      -H "Authorization: Bearer {user_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "data": [
+        {
+          "_id": "unique_flashsale_id",
+          "name": "New Year Sale",
+          "products": ["product_id_1", "product_id_2"],
+          "discount": 30,
+          "startAt": "2025-01-01T00:00:00Z",
+          "endAt": "2025-01-01T23:59:59Z",
+          "status": "active",
+          "createdAt": "2024-12-25T10:00:00Z",
+          "updatedAt": "2024-12-30T15:00:00Z"
+        }
+      ]
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Update Flash Sale {{ tag: 'PUT', label: '/v1/flashsales/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to update the details of an existing flash sale. You can update attributes such as the name, products, discount percentage, start and end times, and status.
+
+    ### Required Attributes
+
+    <Properties>
+      <Property name="name" type="string">
+        Name of the flash sale (optional).
+      </Property>
+      <Property name="products" type="array[objectId]">
+        List of product IDs included in the flash sale (optional).
+      </Property>
+      <Property name="discount" type="number">
+        Discount percentage applied during the flash sale (optional).
+      </Property>
+      <Property name="startAt" type="datetime">
+        The start date and time of the flash sale (optional).
+      </Property>
+      <Property name="endAt" type="datetime">
+        The end date and time of the flash sale (optional).
+      </Property>
+      <Property name="status" type="string">
+        Status of the flash sale (optional).
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Invalid ID**: If the provided ID does not correspond to an existing flash sale, a `404 Not Found` status code will be returned.
+    - **Validation Errors**: If any provided data is invalid, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="PUT" label="/v1/flashsales/:id">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X PUT {{host}}/api/v1/flashsales/unique_flashsale_id \
+      -H "Authorization: Bearer {user_token}" \
+      --data '{
+        "name": "Updated Sale Name",
+        "discount": 40,
+        "startAt": "2025-01-05T00:00:00Z",
+        "endAt": "2025-01-05T23:59:59Z",
+        "status": "inactive"
+      }'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "unique_flashsale_id",
+      "name": "Updated Sale Name",
+      "products": ["product_id_1", "product_id_2"],
+      "dateRange": ["2025-01-05T00:00:00Z", "2025-01-05T23:59:59Z"],
+      "status": "inactive",
+      "createdAt": "2024-12-25T10:00:00Z",
+      "updatedAt": "2025-01-01T12:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>

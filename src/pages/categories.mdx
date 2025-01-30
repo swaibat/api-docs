@@ -1,0 +1,279 @@
+import { CompactTable, CompactRow, CompactCell } from '@/components/Table'
+
+export const description =
+  'This section outlines the various endpoints for managing categories, including retrieving, creating, updating, and deleting category details.'
+
+# Categories
+
+Categories are essential for organizing products into logical groups within the platform. This section provides detailed information on the endpoints used for managing categories, such as retrieving, creating, updating, and deleting category details.
+
+## Category Model
+
+The category model represents the structure of a category in the system. Below is a breakdown of the properties of the category model.
+
+### Properties
+
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>categoryId</CompactCell>
+    <CompactCell type>number</CompactCell>
+    <CompactCell>A unique identifier for the category. This defaults to `1` if not specified.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>name</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The name of the category. This field is required and must be unique.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>slug</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>A unique slug for the category, used for URL-friendly identification. This field is mandatory.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>thumbnail</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The thumbnail image URL for the category.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>fileId</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>A reference to a file in the `File` model, which may contain additional media related to the category.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>status</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The status of the category. Possible values are `DRAFT` or `PUBLISHED`, with a default of `PUBLISHED`.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>parentId</CompactCell>
+    <CompactCell type>number</CompactCell>
+    <CompactCell>Indicates the parent category ID for hierarchical organization. Defaults to `0` if the category has no parent.</CompactCell>
+  </CompactRow>
+</CompactTable>
+
+---
+
+## Get All Categories {{ tag: 'GET', label: '/' }}
+
+<Row>
+  <Col>
+
+    This endpoint retrieves a list of all categories.
+
+    ### Edge Cases:
+    - **No Categories Found**: If no categories exist, the server will return an empty list with a `200 OK` status code.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G {{host}}/api/v1/categories \
+      -H "Authorization: Bearer {user_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    [
+      {
+        "_id": "65b12adad41ea8eb64ba1001",
+        "categoryId": 1,
+        "name": "Vehicles",
+        "slug": "vehicles",
+        "thumbnail": "http://localhost:8080/assets/categories/vehicles.png",
+        "parentId": 0,
+        "createdAt": "2025-01-07T15:38:13.631Z",
+        "productsCount": 10,
+        "children": [
+            {
+                "_id": "65b12adad41ea8eb64ba1005",
+                "name": "Motorbikes & Scooters",
+                "slug": "motorbikes_scooters",
+                "thumbnail": "",
+                "parentId": 1,
+                "createdAt": "2025-01-07T15:38:13.634Z",
+                "productsCount": 0
+            },
+            {
+                "_id": "65b12adad41ea8eb64ba1006",
+                "name": "Trucks & Trailers",
+                "slug": "trucks_trailers",
+                "thumbnail": "",
+                "parentId": 1,
+                "createdAt": "2025-01-07T15:38:13.634Z",
+                "productsCount": 2
+            },
+            {
+                "_id": "65b12adad41ea8eb64ba1007",
+                "name": "Vehicle Parts & Accessories",
+                "slug": "vehicle_parts_accessories",
+                "thumbnail": "",
+                "parentId": 1,
+                "createdAt": "2025-01-07T15:38:13.634Z",
+                "productsCount": 0
+            }
+          ]
+      }
+    ]
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Create Category {{ tag: 'POST', label: '/' }}
+
+<Row>
+  <Col>
+
+    This endpoint is used to create a new category. All required fields must be provided.
+
+    ### Required Attributes
+
+    <Properties>
+      <Property name="name" type="string">
+        The name of the category.
+      </Property>
+      <Property name="slug" type="string">
+        A unique slug for the category.
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Duplicate Name/Slug**: If the `name` or `slug` is not unique, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X POST {{host}}/api/v1/categories \
+      -H "Authorization: Bearer {user_token}" \
+      --data '{
+        "name": "drone",
+        "slug": "drone",
+        "fileId": "64e8d6aeb8d6f90017c0a8d4",
+        "parentId": "65b12adad41ea8eb64ba1001"
+      }'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "status": 201,
+      "message": "Category created successfully",
+      "data": {
+          "categoryId": 144,
+          "name": "drone",
+          "slug": "drone",
+          "status": "PUBLISHED",
+          "parentId": 1,
+          "_id": "678fb98563fba660bb189466",
+          "fileId": "64e8d6aeb8d6f90017c0a8d4",
+          "thumbnail": "https://example.com/images/drone.jpg",
+          "createdAt": "2025-01-21T15:13:09.131Z",
+          "updatedAt": "2025-01-21T15:13:09.131Z",
+          "__v": 0
+      }
+   }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Update Category {{ tag: 'PUT', label: '/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to update the details of an existing category.
+
+    ### Required Attributes
+
+    <Properties>
+      <Property name="name" type="string">
+        Updated name of the category (optional).
+      </Property>
+      <Property name="slug" type="string">
+        Updated slug for the category (optional).
+      </Property>
+      <Property name="status" type="string">
+        Updated status of the category (optional).
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Invalid ID**: If the provided ID does not correspond to an existing category, a `404 Not Found` status code will be returned.
+    - **Validation Errors**: If any provided data is invalid, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="PUT" label="/:id">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X PUT {{host}}/api/v1/categories/:id \
+      -H "Authorization: Bearer {user_token}" \
+      --data '{
+        "name": "Updated Fashion",
+        "status": "DRAFT"
+      }'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "categoryId": 2,
+      "name": "Updated Fashion",
+      "slug": "fashion",
+      "thumbnail": "https://example.com/images/fashion.jpg",
+      "fileId": "64e8d6aeb8d6f90017c0a8d4",
+      "status": "DRAFT",
+      "parentId": "64e8d6aeb8d6f90017c0a800"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Delete Category {{ tag: 'DELETE', label: '/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to delete a category by its ID.
+
+    ### Edge Cases:
+    - **Invalid ID**: If the provided ID does not correspond to an existing category, a `404 Not Found` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="DELETE" label="/:id">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X DELETE {{host}}/api/v1/categories/:id \
+      -H "Authorization: Bearer {user_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "status": 200,
+      "message": "Category deleted successfully."
+    }
+    ```
+
+  </Col>
+</Row>

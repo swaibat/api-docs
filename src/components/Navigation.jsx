@@ -10,6 +10,9 @@ import { useSectionStore } from '@/components/SectionProvider'
 import { Tag } from '@/components/Tag'
 import { remToPx } from '@/lib/remToPx'
 
+import { mdiPackage, mdiMessage, mdiFlash, mdiTag, mdiStar, mdiLock, mdiCog, mdiShape, mdiBookMarker, mdiFileDocument, mdiAccountMultiple, mdiFileDocumentOutline, mdiDatabase, mdiFileMultiple } from '@mdi/js'
+import Icon from '@mdi/react'
+
 function useInitialValue(value, condition = true) {
   let initialValue = useRef(value).current
   return condition ? initialValue : value
@@ -28,25 +31,31 @@ function TopLevelNavItem({ href, children }) {
   )
 }
 
-function NavLink({ href, tag, active, isAnchorLink = false, children }) {
+function NavLink({ href, tag, active, isAnchorLink = false, children, icon }) {
   return (
     <Link
       href={href}
       aria-current={active ? 'page' : undefined}
       className={clsx(
-        'flex justify-between gap-2 py-1 pr-3 text-sm transition',
+        'flex gap-2 py-1 pr-3 text-sm transition',
         isAnchorLink ? 'pl-7' : 'pl-4',
         active
           ? 'text-zinc-900 dark:text-white'
           : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
       )}
     >
-      <span className="truncate">{children}</span>
       {tag && (
-        <Tag variant="small" color="zinc">
+        <Tag style={{ maxWidth: 25 }} variant="small">
           {tag}
         </Tag>
       )}
+      <span className="flex items-center gap-2">
+        <span className='text-zinc-500'>
+          <Icon path={href.match('model') ? mdiDatabase : icon} size={0.6} />
+        </span>
+        <span className="truncate">{children}</span>
+      </span>
+
     </Link>
   )
 }
@@ -106,9 +115,6 @@ function ActivePageMarker({ group, pathname }) {
 }
 
 function NavigationGroup({ group, className }) {
-  // If this is the mobile navigation then we always render the initial
-  // state, so that the state does not change during the close animation.
-  // The state will still update when we re-open (re-render) the navigation.
   let isInsideMobileNavigation = useIsInsideMobileNavigation()
   let [router, sections] = useInitialValue(
     [useRouter(), useSectionStore((s) => s.sections)],
@@ -144,7 +150,7 @@ function NavigationGroup({ group, className }) {
         <ul role="list" className="border-l border-transparent">
           {group.links.map((link) => (
             <motion.li key={link.href} layout="position" className="relative">
-              <NavLink href={link.href} active={link.href === router.pathname}>
+              <NavLink href={link.href} active={link.href === router.pathname} icon={link.icon}>
                 {link.title}
               </NavLink>
               <AnimatePresence mode="popLayout" initial={false}>
@@ -187,27 +193,33 @@ export const navigation = [
   {
     title: 'Guides',
     links: [
-      { title: 'Introduction', href: '/' },
-      { title: 'Quickstart', href: '/quickstart' },
-      { title: 'SDKs', href: '/sdks' },
-      { title: 'Authentication', href: '/authentication' },
-      { title: 'Pagination', href: '/pagination' },
-      { title: 'Errors', href: '/errors' },
-      { title: 'Webhooks', href: '/webhooks' },
+      { title: 'Introduction', href: '/', icon: mdiFileDocumentOutline },
+      { title: 'Quickstart', href: '/quickstart', icon: mdiFileDocumentOutline },
+      { title: 'Libraries', href: '/libraries', icon: mdiFileDocumentOutline },
+      { title: 'Authentication', href: '/authentication', icon: mdiFileDocumentOutline },
+      { title: 'Pagination', href: '/pagination', icon: mdiFileDocumentOutline },
+      { title: 'Errors', href: '/errors', icon: mdiFileDocumentOutline },
+      { title: 'Webhooks', href: '/webhooks', icon: mdiFileDocumentOutline },
     ],
   },
   {
     title: 'Resources',
     links: [
-      { title: 'Users', href: '/users' },
-      // { title: 'Conversations', href: '/conversations' },
-      // { title: 'Messages', href: '/messages' },
-      // { title: 'Groups', href: '/groups' },
-      // { title: 'Attachments', href: '/attachments' },
+      
+      { title: 'Files', href: '/files', icon: mdiFileMultiple },
+      { title: 'Products', href: '/products', icon: mdiPackage },
+      { title: 'Categories', href: '/categories', icon: mdiShape },
+      { title: 'Addresses', href: '/addresses', icon: mdiBookMarker },
+      { title: 'Messages', href: '/messages', icon: mdiMessage },
+      { title: 'Flash Sales', href: '/flashsales', icon: mdiFlash },
+      { title: 'Brands', href: '/brands', icon: mdiTag },
+      { title: 'Reviews', href: '/reviews', icon: mdiStar },
+      { title: 'Users', href: '/users', icon: mdiAccountMultiple },
+      { title: 'Pages', href: '/pages', icon: mdiAccountMultiple },
+      { title: 'Settings', href: '/settings', icon: mdiCog },
     ],
   },
-]
-
+];
 export function Navigation(props) {
   return (
     <nav {...props}>
@@ -224,7 +236,7 @@ export function Navigation(props) {
         ))}
         <li className="sticky bottom-0 z-10 mt-6 min-[416px]:hidden">
           <Button href="#" variant="filled" className="w-full">
-            Sign in
+            Get Started
           </Button>
         </li>
       </ul>

@@ -1,0 +1,298 @@
+import { CompactTable, CompactRow, CompactCell } from '@/components/Table'
+
+export const description =
+  'This section outlines the various endpoints for managing messages, including sending, reading, replying, and managing message types.'
+
+# Messages
+
+Managing messages between users is an essential feature in modern applications. In this section, we will discuss the different endpoints to handle messages, including how to send, read, reply to messages, and more.
+
+## Message model
+
+Each message in the platform is represented by a model that contains attributes like sender, recipient, message content, type, and status. Below is a breakdown of the properties of the message model.
+
+### Properties
+
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>_id</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Unique identifier for the message.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>from</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Reference to the sender (User).</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>to</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Reference to the recipient (User).</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>replyTo</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Reference to the message being replied to, if any.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>replyToProduct</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Reference to the product associated with the message, if any.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>type</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The type of message (e.g., 'location', 'text', 'image').</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>isRead</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Indicates whether the message has been read. Default is `false`.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>message</CompactCell>
+    <CompactCell type>mixed</CompactCell>
+    <CompactCell>The actual content of the message (text, image URL, or location).</CompactCell>
+  </CompactRow>
+</CompactTable>
+
+
+---
+
+## Send message {{ tag: 'POST', label: '/v1/messages' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to send a new message to a recipient. You must provide the sender, recipient, and message content, along with the type of message being sent (text, image, or location).
+
+    ### Required attributes
+
+    <Properties>
+      <Property name="from" type="objectId">
+        The sender of the message.
+      </Property>
+      <Property name="to" type="objectId">
+        The recipient of the message.
+      </Property>
+      <Property name="message" type="string | object">
+        The content of the message (text, image URL, or location).
+      </Property>
+      <Property name="type" type="string">
+        Type of message being sent (one of 'location', 'text', 'image').
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Missing Required Fields**: If any required fields are missing, a `400 Bad Request` status code will be returned.
+    - **Invalid Type**: If an invalid type is provided (not 'location', 'text', or 'image'), a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/v1/messages">
+
+    ```bash {{ title: 'cURL' }}
+    curl {{host}}/api/v1/messages \
+      -H "Authorization: Bearer {user_token}" \
+      --data '{
+        "from": "634dd5f9cd3498370afbdba4",
+        "to": "63582d9ff8614efe18526c9e",
+        "message": "Hello, how are you?",
+        "type": "text"
+      }'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "unique_message_id",
+      "from": "634dd5f9cd3498370afbdba4",
+      "to": "63582d9ff8614efe18526c9e",
+      "message": "Hello, how are you?",
+      "type": "text",
+      "isRead": false,
+      "createdAt": "2025-01-19T00:00:00Z",
+      "updatedAt": "2025-01-19T00:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## List all messages {{ tag: 'GET', label: '/v1/messages' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to retrieve a list of all messages sent or received by the authenticated user. You can filter messages by different criteria, such as sender, recipient, and message type.
+
+    ### Edge Cases:
+    - **No Messages Found**: If no messages exist, the server will respond with a `404 Not Found` status code or return an empty list.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/v1/messages">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G {{host}}/api/v1/messages \
+      -H "Authorization: Bearer {user_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "data": [
+        {
+          "_id": "unique_message_id",
+          "from": "634dd5f9cd3498370afbdba4",
+          "to": "63582d9ff8614efe18526c9e",
+          "message": "Hello, how are you?",
+          "type": "text",
+          "isRead": false,
+          "createdAt": "2025-01-19T00:00:00Z",
+          "updatedAt": "2025-01-19T00:00:00Z"
+        },
+        {
+          "_id": "another_message_id",
+          "from": "63582d9ff8614efe18526c9e",
+          "to": "634dd5f9cd3498370afbdba4",
+          "message": "I am good, thanks for asking!",
+          "type": "text",
+          "isRead": true,
+          "createdAt": "2025-01-19T00:00:00Z",
+          "updatedAt": "2025-01-19T00:00:00Z"
+        }
+      ]
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Get messages between users {{ tag: 'GET', label: '/v1/messages/conversation/:userId' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to retrieve the conversation between the authenticated user and another user. You must provide the `userId` of the other user to filter the messages.
+
+    ### Edge Cases:
+    - **No Conversation Found**: If no conversation exists between the users, the server will return an empty list.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/v1/messages/conversation/:userId">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G {{host}}/api/v1/messages/conversation/63582d9ff8614efe18526c9e \
+      -H "Authorization: Bearer {user_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "data": [
+        {
+          "_id": "unique_message_id",
+          "from": "634dd5f9cd3498370afbdba4",
+          "to": "63582d9ff8614efe18526c9e",
+          "message": "Hello, how are you?",
+          "type": "text",
+          "isRead": false,
+          "createdAt": "2025-01-19T00:00:00Z",
+          "updatedAt": "2025-01-19T00:00:00Z"
+        },
+        {
+          "_id": "another_message_id",
+          "from": "63582d9ff8614efe18526c9e",
+          "to": "634dd5f9cd3498370afbdba4",
+          "message": "I am good, thanks for asking!",
+          "type": "text",
+          "isRead": true,
+          "createdAt": "2025-01-19T00:00:00Z",
+          "updatedAt": "2025-01-19T00:00:00Z"
+        }
+      ]
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Reply to message {{ tag: 'POST', label: '/v1/messages/reply' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to reply to an existing message. You must specify the `replyTo` field, which refers to the message being replied to.
+
+    ### Required attributes
+
+    <Properties>
+      <Property name="from" type="objectId">
+        The sender of the reply.
+      </Property>
+      <Property name="to" type="objectId">
+        The recipient of the reply.
+      </Property>
+      <Property name="replyTo" type="objectId">
+        The message being replied to.
+      </Property>
+      <Property name="message" type="string">
+        The content of the reply message.
+      </Property>
+      <Property name="type" type="string">
+        Type of reply message (one of 'location', 'text', 'image').
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Message Not Found**: If the message being replied to does not exist, a `404 Not Found` status code will be returned.
+    - **Missing Required Fields**: If required fields are missing, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/v1/messages/reply">
+
+    ```bash {{ title: 'cURL' }}
+    curl {{host}}/api/v1/messages/reply \
+      -H "Authorization: Bearer {user_token}" \
+      --data '{
+        "from": "634dd5f9cd3498370afbdba4",
+        "to": "63582d9ff8614efe18526c9e",
+        "replyTo": "unique_message_id",
+        "message": "I am glad to hear that!",
+        "type": "text"
+      }'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "new_reply_message_id",
+      "from": "634dd5f9cd3498370afbdba4",
+      "to": "63582d9ff8614efe18526c9e",
+      "message": "I am glad to hear that!",
+      "type": "text",
+      "isRead": false,
+      "createdAt": "2025-01-19T00:00:00Z",
+      "updatedAt": "2025-01-19T00:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>

@@ -1,0 +1,360 @@
+import { CompactTable, CompactRow, CompactCell } from '@/components/Table'
+
+export const description =
+  'This section outlines the various endpoints for managing addresses in our e-commerce platform, including creating, updating, retrieving, and deleting addresses.'
+
+# Addresses
+
+Managing addresses in an e-commerce platform is essential for delivering products to the correct location. In this section, we will discuss the different endpoints to handle addresses, including how to create, read, update, and delete address information.
+
+## Address model
+
+Each address in the platform is represented by a model that contains attributes like name, phone number, email, address details, and status. Below is a breakdown of the properties of the address model.
+
+### Properties
+
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>_id</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Unique identifier for the address.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>phoneNumber</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The phone number associated with the address.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>email</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The email address associated with the address.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>addressName</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>A name associated with the address (e.g., "Home" or "Office").</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>country</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The country where the address is located.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>city</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The city where the address is located.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>state</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The state where the address is located.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>mainAddress</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The main address (street address, house number, etc.).</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>isActive</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Indicates whether the address is active. Default is `true`.</CompactCell>
+  </CompactRow>
+</CompactTable>
+
+
+---
+
+## Create address {{ tag: 'POST', label: '/v1/addresses' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to create a new address for the user. You must provide the address details like phone number, email, country, city, state, and main address.
+
+    ### Required attributes
+
+    <Properties>
+      <Property name="phoneNumber" type="string">
+        The phone number associated with the address.
+      </Property>
+      <Property name="email" type="string">
+        The email address associated with the address.
+      </Property>
+      <Property name="addressName" type="string">
+        A name for the address (e.g., 'Home', 'Office').
+      </Property>
+      <Property name="country" type="string">
+        The country of the address.
+      </Property>
+      <Property name="city" type="string">
+        The city of the address.
+      </Property>
+      <Property name="state" type="string">
+        The state of the address.
+      </Property>
+      <Property name="mainAddress" type="string">
+        The street or main address information.
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Missing Required Fields**: If any required fields are missing, a `400 Bad Request` status code will be returned.
+    - **Invalid Address Fields**: If any address field is invalid, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/v1/addresses">
+
+    ```bash {{ title: 'cURL' }}
+    curl {{host}}/api/v1/addresses \
+      -H "Authorization: Bearer {user_token}" \
+      --data '{
+        "phoneNumber": "123456789",
+        "email": "user@example.com",
+        "addressName": "Home",
+        "country": "Uganda",
+        "city": "Kampala",
+        "state": "Central",
+        "mainAddress": "123 Main St"
+      }'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "unique_address_id",
+      "phoneNumber": "123456789",
+      "email": "user@example.com",
+      "addressName": "Home",
+      "country": "Uganda",
+      "city": "Kampala",
+      "state": "Central",
+      "mainAddress": "123 Main St",
+      "isActive": true,
+      "createdAt": "2025-01-19T00:00:00Z",
+      "updatedAt": "2025-01-19T00:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## List all addresses {{ tag: 'GET', label: '/v1/addresses' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to retrieve a list of all addresses associated with the user. You can filter or paginate the list as needed.
+
+    ### Edge Cases:
+    - **No Addresses Found**: If no addresses exist, the server will respond with a `404 Not Found` status code, or return an empty list.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/v1/addresses">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G {{host}}/api/v1/addresses \
+      -H "Authorization: Bearer {user_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "data": [
+        {
+          "_id": "unique_address_id",
+          "phoneNumber": "123456789",
+          "email": "user@example.com",
+          "addressName": "Home",
+          "country": "Uganda",
+          "city": "Kampala",
+          "state": "Central",
+          "mainAddress": "123 Main St",
+          "isActive": true
+        },
+        {
+          "_id": "another_address_id",
+          "phoneNumber": "987654321",
+          "email": "user2@example.com",
+          "addressName": "Office",
+          "country": "Uganda",
+          "city": "Entebbe",
+          "state": "Central",
+          "mainAddress": "456 Office Rd",
+          "isActive": true
+        }
+      ]
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Get addresses of the authenticated user {{ tag: 'GET', label: '/v1/addresses/me' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to retrieve the addresses belonging to the authenticated user.
+
+    ### Edge Cases:
+    - **No Addresses Found for User**: If the user does not have any addresses, the server will respond with an empty list or a `404 Not Found` status code.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/v1/addresses/me">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G {{host}}/api/v1/addresses/me \
+      -H "Authorization: Bearer {user_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "data": [
+        {
+          "_id": "unique_address_id",
+          "phoneNumber": "123456789",
+          "email": "user@example.com",
+          "addressName": "Home",
+          "country": "Uganda",
+          "city": "Kampala",
+          "state": "Central",
+          "mainAddress": "123 Main St",
+          "isActive": true
+        }
+      ]
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Update address {{ tag: 'PATCH', label: '/v1/addresses/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to update the details of a specific address by its ID. You must provide the new address details.
+
+    ### Required attributes
+
+    <Properties>
+      <Property name="phoneNumber" type="string">
+        The phone number associated with the address.
+      </Property>
+      <Property name="email" type="string">
+        The email address associated with the address.
+      </Property>
+      <Property name="addressName" type="string">
+        A name for the address (e.g., 'Home', 'Office').
+      </Property>
+      <Property name="country" type="string">
+        The country of the address.
+      </Property>
+      <Property name="city" type="string">
+        The city of the address.
+      </Property>
+      <Property name="state" type="string">
+        The state of the address.
+      </Property>
+      <Property name="mainAddress" type="string">
+        The street or main address information.
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Address Not Found**: If the specified address does not exist, the server will return a `404 Not Found` status code.
+    - **Missing Required Fields**: If the required fields are missing, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="PATCH" label="/v1/addresses/:id">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X PATCH {{host}}/api/v1/addresses/unique_address_id \
+      -H "Authorization: Bearer {user_token}" \
+      --data '{
+        "phoneNumber": "123456789",
+        "email": "user@example.com",
+        "addressName": "Updated Address",
+        "country": "Uganda",
+        "city": "Kampala",
+        "state": "Central",
+        "mainAddress": "123 Updated St"
+      }'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "unique_address_id",
+      "phoneNumber": "123456789",
+      "email": "user@example.com",
+      "addressName": "Updated Address",
+      "country": "Uganda",
+      "city": "Kampala",
+      "state": "Central",
+      "mainAddress": "123 Updated St",
+      "isActive": true,
+      "createdAt": "2025-01-19T00:00:00Z",
+      "updatedAt": "2025-01-19T00:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Delete address {{ tag: 'DELETE', label: '/v1/addresses/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to delete a specific address by its ID. If successful, the address will no longer be available in the user’s address list.
+
+    ### Edge Cases:
+    - **Address Not Found**: If the specified address does not exist, the server will return a `404 Not Found` status code.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="DELETE" label="/v1/addresses/:id">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X DELETE {{host}}/api/v1/addresses/unique_address_id \
+      -H "Authorization: Bearer {user_token}" \
+      --data '{
+        "receiverId": "634dd5f9cd3498370afbdba4",
+        "senderId": "63582d9ff8614efe18526c9e",
+        "message": "hello doe"
+      }'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "message": "Address deleted successfully"
+    }
+    ```
+
+  </Col>
+</Row>

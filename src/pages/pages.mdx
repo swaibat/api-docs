@@ -1,0 +1,404 @@
+import { CompactTable, CompactRow, CompactCell } from '@/components/Table'
+
+export const description =
+  'This section outlines the various endpoints for managing pages such as Privacy Policy, Terms of Service, Return Policy, FAQs, and About Us in our e-commerce platform.'
+
+# Pages
+
+Managing pages in an e-commerce platform is important for displaying essential information to users. In this section, we will discuss the different endpoints to handle pages, including how to create, read, update, and delete page content.
+
+## Page model
+
+Each page in the platform is represented by a model that contains attributes like type, content, and status. Below is a breakdown of the properties of the page model.
+
+### Properties
+
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>_id</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Unique identifier for the page.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>type</CompactCell>
+    <CompactCell type>enum</CompactCell>
+    <CompactCell>
+      The type of page. This field is required and can be one of the following:
+      - PRIVACY_POLICY
+      - TERMS_OF_SERVICE
+      - RETURN_POLICY
+      - FAQ
+      - ABOUT_US
+    </CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>content</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The main content of the page. This field is required.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>isActive</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Indicates whether the page is active. Default is `true`.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>createdAt</CompactCell>
+    <CompactCell type>datetime</CompactCell>
+    <CompactCell>The date and time when the page was created.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>updatedAt</CompactCell>
+    <CompactCell type>datetime</CompactCell>
+    <CompactCell>The date and time when the page was last updated.</CompactCell>
+  </CompactRow>
+</CompactTable>
+
+---
+
+## Create page content {{ tag: 'POST', label: '/v1/pages' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to create a new page content in your platform. You must provide the page type, content, and the status of the page.
+
+    ### Required attributes
+
+    <Properties>
+      <Property name="type" type="string">
+        The type of page. It can be one of the following: 'PRIVACY_POLICY', 'TERMS_OF_SERVICE', 'RETURN_POLICY', 'FAQ', or 'ABOUT_US'.
+      </Property>
+      <Property name="content" type="string">
+        The content for the page.
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Missing Required Fields**: If any required fields are missing, a `400 Bad Request` status code will be returned.
+    - **Invalid Page Type**: If the provided page type is not valid, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/v1/pages">
+
+    ```bash {{ title: 'cURL' }}
+    curl {{host}}/api/v1/pages \
+      -H "Authorization: Bearer {admin_token}" \
+      -d type="PRIVACY_POLICY" \
+      -d content="Privacy policy content goes here."
+    ```
+
+    ```js
+    import ApiClient from '@example/ecommerce-api'
+
+    const client = new ApiClient(adminToken)
+
+    await client.pages.create({
+      type: 'PRIVACY_POLICY',
+      content: 'Privacy policy content goes here.',
+    })
+    ```
+
+    ```python
+    from ecommerce_api import ApiClient
+
+    client = ApiClient(adminToken)
+
+    client.pages.create(
+      type="PRIVACY_POLICY",
+      content="Privacy policy content goes here.",
+    )
+    ```
+
+    ```php
+    $client = new \Ecommerce\ApiClient($adminToken);
+
+    $client->pages->create([
+      'type' => 'PRIVACY_POLICY',
+      'content' => 'Privacy policy content goes here.',
+    ]);
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "unique_page_id",
+      "type": "PRIVACY_POLICY",
+      "content": "Privacy policy content goes here.",
+      "isActive": true,
+      "createdAt": "2025-01-19T00:00:00Z",
+      "updatedAt": "2025-01-19T00:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## List all pages {{ tag: 'GET', label: '/v1/pages' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to retrieve a list of all page contents. You can filter or paginate the list as needed.
+
+    ### Edge Cases:
+    - **No Pages Found**: If no pages exist, the server will respond with a `404 Not Found` status code, or return an empty list.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/v1/pages">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G {{host}}/api/v1/pages \
+      -H "Authorization: Bearer {admin_token}"
+    ```
+
+    ```js
+    import ApiClient from '@example/ecommerce-api'
+
+    const client = new ApiClient(adminToken)
+
+    await client.pages.list()
+    ```
+
+    ```python
+    from ecommerce_api import ApiClient
+
+    client = ApiClient(adminToken)
+
+    client.pages.list()
+    ```
+
+    ```php
+    $client = new \Ecommerce\ApiClient($adminToken);
+
+    $client->pages->list();
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "data": [
+        {
+          "_id": "unique_page_id",
+          "type": "PRIVACY_POLICY",
+          "content": "Privacy policy content goes here.",
+          "isActive": true
+        },
+        {
+          "_id": "another_page_id",
+          "type": "TERMS_OF_SERVICE",
+          "content": "Terms of service content goes here.",
+          "isActive": true
+        }
+      ]
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Get page content by type {{ tag: 'GET', label: '/v1/pages/:type' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to retrieve the content of a specific page by its type. The `type` parameter should be one of the following:
+    - 'PRIVACY_POLICY'
+    - 'TERMS_OF_SERVICE'
+    - 'RETURN_POLICY'
+    - 'FAQ'
+    - 'ABOUT_US'
+
+    ### Edge Cases:
+    - **Page Not Found**: If no page of the specified type exists, the server will return a `404 Not Found` status code.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/v1/pages/PRIVACY_POLICY">
+
+    ```bash {{ title: 'cURL' }}
+    curl {{host}}/api/v1/pages/PRIVACY_POLICY \
+      -H "Authorization: Bearer {admin_token}"
+    ```
+
+    ```js
+    import ApiClient from '@example/ecommerce-api'
+
+    const client = new ApiClient(adminToken)
+
+    await client.pages.get('PRIVACY_POLICY')
+    ```
+
+    ```python
+    from ecommerce_api import ApiClient
+
+    client = ApiClient(adminToken)
+
+    client.pages.get("PRIVACY_POLICY")
+    ```
+
+    ```php
+    $client = new \Ecommerce\ApiClient($adminToken);
+
+    $client->pages->get('PRIVACY_POLICY');
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "unique_page_id",
+      "type": "PRIVACY_POLICY",
+      "content": "Privacy policy content goes here.",
+      "isActive": true
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Update page content {{ tag: 'PATCH', label: '/v1/pages/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to update the content of a page by its ID. You must provide the new content and optionally update the page's status.
+
+    ### Required attributes
+
+    <Properties>
+      <Property name="content" type="string">
+        The new content for the page.
+      </Property>
+      <Property name="isActive" type="boolean">
+        The status of the page (whether it is active or not).
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Page Not Found**: If the specified page does not exist, the server will return a `404 Not Found` status code.
+    - **Missing Required Fields**: If the required fields are missing, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="PATCH" label="/v1/pages/:id">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X PATCH {{host}}/api/v1/pages/unique_page_id \
+      -H "Authorization: Bearer {admin_token}" \
+      -d content="Updated privacy policy content."
+    ```
+
+    ```js
+    import ApiClient from '@example/ecommerce-api'
+
+    const client = new ApiClient(adminToken)
+
+    await client.pages.update('unique_page_id', {
+      content: 'Updated privacy policy content.',
+      isActive: true,
+    })
+    ```
+
+    ```python
+    from ecommerce_api import ApiClient
+
+    client = ApiClient(adminToken)
+
+    client.pages.update("unique_page_id", {
+      "content": "Updated privacy policy content.",
+      "isActive": True,
+    })
+    ```
+
+    ```php
+    $client = new \Ecommerce\ApiClient($adminToken);
+
+    $client->pages->update('unique_page_id', [
+      'content' => 'Updated privacy policy content.',
+      'isActive' => true,
+    ]);
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "unique_page_id",
+      "type": "PRIVACY_POLICY",
+      "content": "Updated privacy policy content.",
+      "isActive": true,
+      "updatedAt": "2025-01-19T00:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Delete page content {{ tag: 'DELETE', label: '/v1/pages/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to delete a page by its ID. Once deleted, the page content will no longer be available.
+
+    ### Edge Cases:
+    - **Page Not Found**: If the specified page does not exist, the server will return a `404 Not Found` status code.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="DELETE" label="/v1/pages/:id">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X DELETE {{host}}/api/v1/pages/unique_page_id \
+      -H "Authorization: Bearer {admin_token}"
+    ```
+
+    ```js
+    import ApiClient from '@example/ecommerce-api'
+
+    const client = new ApiClient(adminToken)
+
+    await client.pages.delete('unique_page_id')
+    ```
+
+    ```python
+    from ecommerce_api import ApiClient
+
+    client = ApiClient(adminToken)
+
+    client.pages.delete("unique_page_id")
+    ```
+
+    ```php
+    $client = new \Ecommerce\ApiClient($adminToken);
+
+    $client->pages->delete('unique_page_id');
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "message": "Page deleted successfully."
+    }
+    ```
+
+  </Col>
+</Row>

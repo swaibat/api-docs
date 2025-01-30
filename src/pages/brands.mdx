@@ -1,0 +1,303 @@
+import { CompactTable, CompactRow, CompactCell } from '@/components/Table'
+
+export const description =
+  'This section outlines the various endpoints for managing brands, including retrieving, creating, updating, and deleting brand details.'
+
+# Brands
+
+Managing brands is an essential feature for categorizing and organizing products in an e-commerce platform. This section provides details about the endpoints for managing brand-related data.
+
+## Brand Model
+
+Each brand in the platform is represented by a model that contains attributes like the brand name, origin, associated models, and category. Below is a breakdown of the properties of the brand model.
+
+### Properties
+
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>_id</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Unique identifier for the brand.</CompactCell>
+    
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>name</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Name of the brand (unique and required).</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>origin</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The origin country of the brand.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>models</CompactCell>
+    <CompactCell type>array[string]</CompactCell>
+    <CompactCell>List of models associated with the brand.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>categoryId</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>ID of the associated category (references the category model).</CompactCell>
+  </CompactRow>
+</CompactTable>
+
+---
+
+## Get All Brands {{ tag: 'GET', label: '/v1/brands' }}
+
+<Row>
+  <Col>
+
+    This endpoint retrieves a list of all brands available in the system. The response includes details such as the brand name, origin, models, and associated category ID.
+
+    ### Edge Cases:
+    - **No Brands Found**: If no brands exist, the server will return an empty list with a `200 OK` status code.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/v1/brands">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G {{host}}/api/v1/brands \
+      -H "Authorization: Bearer {user_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "data": [
+        {
+          "_id": "unique_brand_id",
+          "name": "Brand Name",
+          "origin": "Country",
+          "models": ["Model A", "Model B"],
+          "categoryId": "unique_category_id"
+        }
+      ]
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Get One Brand {{ tag: 'GET', label: '/v1/brands/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint retrieves details for a specific brand by its unique ID.
+
+    ### Edge Cases:
+    - **Invalid ID**: If the provided ID does not exist, a `404 Not Found` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/v1/brands/:id">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G {{host}}/api/v1/brands/unique_brand_id \
+      -H "Authorization: Bearer {user_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "unique_brand_id",
+      "name": "Brand Name",
+      "origin": "Country",
+      "models": ["Model A", "Model B"],
+      "categoryId": "unique_category_id"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Get Brands By Category {{ tag: 'GET', label: '/v1/brands/category/:categoryId' }}
+
+<Row>
+  <Col>
+
+    This endpoint retrieves a list of brands that belong to a specific category by providing the category ID.
+
+    ### Edge Cases:
+    - **Invalid Category ID**: If the category ID does not exist, a `404 Not Found` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/v1/brands/category/:categoryId">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G {{host}}/api/v1/brands/category/unique_category_id \
+      -H "Authorization: Bearer {user_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "data": [
+        {
+          "_id": "unique_brand_id",
+          "name": "Brand Name",
+          "origin": "Country",
+          "models": ["Model A", "Model B"],
+          "categoryId": "unique_category_id"
+        }
+      ]
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Create Brand {{ tag: 'POST', label: '/v1/brands' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to create a new brand by providing the required details such as name, origin, models, and associated category ID.
+
+    ### Required Attributes
+
+    <Properties>
+      <Property name="name" type="string">
+        Name of the brand (unique and required).
+      </Property>
+      <Property name="origin" type="string">
+        The origin country of the brand.
+      </Property>
+      <Property name="models" type="array[string]">
+        List of models associated with the brand.
+      </Property>
+      <Property name="categoryId" type="objectId">
+        ID of the associated category.
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Duplicate Name**: If the brand name already exists, a `409 Conflict` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/v1/brands">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X POST {{host}}/api/v1/brands \
+      -H "Authorization: Bearer {user_token}" \
+      --data '{
+        "name": "New Brand",
+        "origin": "Country",
+        "models": ["Model A", "Model B"],
+        "categoryId": "unique_category_id"
+      }'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "unique_brand_id",
+      "name": "New Brand",
+      "origin": "Country",
+      "models": ["Model A", "Model B"],
+      "categoryId": "unique_category_id",
+      "createdAt": "2025-01-21T00:00:00Z",
+      "updatedAt": "2025-01-21T00:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Update Brand {{ tag: 'PATCH', label: '/v1/brands/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to update the details of an existing brand by its unique ID. You can update attributes such as the name, origin, models, and associated category ID.
+
+    ### Edge Cases:
+    - **Invalid ID**: If the provided ID does not exist, a `404 Not Found` status code will be returned.
+    - **Validation Errors**: If any provided data is invalid, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="PATCH" label="/v1/brands/:id">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X PATCH {{host}}/api/v1/brands/unique_brand_id \
+      -H "Authorization: Bearer {user_token}" \
+      --data '{
+        "name": "Updated Brand Name",
+        "origin": "Updated Country",
+        "models": ["Updated Model A"],
+        "categoryId": "updated_category_id"
+      }'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "unique_brand_id",
+      "name": "Updated Brand Name",
+      "origin": "Updated Country",
+      "models": ["Updated Model A"],
+      "categoryId": "updated_category_id",
+      "createdAt": "2025-01-20T10:00:00Z",
+      "updatedAt": "2025-01-21T12:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Delete Brand {{ tag: 'DELETE', label: '/v1/brands/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to delete a brand by its unique ID.
+
+    ### Edge Cases:
+    - **Invalid ID**: If the provided ID does not exist, a `404 Not Found` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="DELETE" label="/v1/brands/:id">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X DELETE {{host}}/api/v1/brands/unique_brand_id \
+      -H "Authorization: Bearer {user_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "message": "Brand deleted successfully."
+    }
+    ```
+
+  </Col>
+</Row>

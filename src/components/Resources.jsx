@@ -3,17 +3,59 @@ import { motion, useMotionTemplate, useMotionValue } from 'framer-motion'
 
 import { GridPattern } from '@/components/GridPattern'
 import { Heading } from '@/components/Heading'
-import { ChatBubbleIcon } from '@/components/icons/ChatBubbleIcon'
-import { EnvelopeIcon } from '@/components/icons/EnvelopeIcon'
+import { CartIcon } from '@/components/icons/CartIcon'
 import { UserIcon } from '@/components/icons/UserIcon'
-import { UsersIcon } from '@/components/icons/UsersIcon'
+// import { PaymentIcon } from '@/components/icons/PaymentIcon'
+// import { BoxIcon } from '@/components/icons/BoxIcon'
 
 const resources = [
   {
-    href: '/contacts',
-    name: 'Contacts',
+    href: '/products',
+    name: 'Products',
     description:
-      'Learn about the contact model and how to create, retrieve, update, delete, and list contacts.',
+      'Learn how to create, manage, update, and delete products. Handle product variants, pricing, and stock management.',
+    icon: UserIcon,
+    pattern: {
+      y: 16,
+      squares: [
+        [0, 1],
+        [1, 3],
+      ],
+    },
+  },
+  {
+    href: '/orders',
+    name: 'Orders',
+    description:
+      'Manage customer orders, track their statuses, handle shipping, and process returns or refunds.',
+    icon: CartIcon,
+    pattern: {
+      y: 16,
+      squares: [
+        [0, 1],
+        [1, 3],
+      ],
+    },
+  },
+  {
+    href: '/payments',
+    name: 'Payments',
+    description:
+      'Set up and manage payment gateways (Stripe, PayPal, etc.), process transactions, and handle refunds.',
+    icon: UserIcon,
+    pattern: {
+      y: 16,
+      squares: [
+        [0, 1],
+        [1, 3],
+      ],
+    },
+  },
+  {
+    href: '/customers',
+    name: 'Customers',
+    description:
+      'Learn about managing customer profiles, tracking purchase history, and managing customer data securely.',
     icon: UserIcon,
     pattern: {
       y: 16,

@@ -1,0 +1,189 @@
+import { CompactTable, CompactRow, CompactCell } from '@/components/Table'
+
+export const description =
+  'This section outlines the various endpoints for managing reviews, including creating, updating, and deleting reviews for products.'
+
+# Reviews
+
+Managing reviews is an essential feature for an e-commerce platform, enabling customers to share their experiences with products. In this section, we will discuss the endpoints for creating, updating, and deleting reviews for products.
+
+## Review Model
+
+Each review in the platform is represented by a model that contains attributes like the product ID, user ID, rating, and comment. Below is a breakdown of the properties of the review model.
+
+### Properties
+
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>_id</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Unique identifier for the review.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>productId</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Unique identifier for the product being reviewed.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>userId</CompactCell>
+    <CompactCell type>objectId</CompactCell>
+    <CompactCell>Unique identifier for the user who wrote the review.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>rating</CompactCell>
+    <CompactCell type>number</CompactCell>
+    <CompactCell>Rating given by the user (between 1 and 5).</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>comment</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Comment written by the user about the product.</CompactCell>
+  </CompactRow>
+</CompactTable>
+
+
+---
+
+## Create Review {{ tag: 'POST', label: '/v1/reviews/:productId' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows users to create a new review for a product. The request should include the product ID, rating, and comment.
+
+    ### Required Attributes
+
+    <Properties>
+      <Property name="rating" type="number">
+        Rating for the product (1-5).
+      </Property>
+      <Property name="comment" type="string">
+        The review comment (minimum 10 characters).
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Product Not Found**: If the product ID does not exist, a `404 Not Found` status code will be returned.
+    - **Invalid Rating**: If the rating is not between 1 and 5, a `400 Bad Request` status code will be returned.
+    - **Comment Too Short**: If the comment is fewer than 10 characters, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/v1/reviews/:productId">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X POST {{host}}/api/v1/reviews/product_id \
+      -H "Authorization: Bearer {user_token}" \
+      --data '{
+        "rating": 5,
+        "comment": "Excellent product, highly recommend!"
+      }'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "unique_review_id",
+      "productId": "product_id",
+      "userId": "user_id",
+      "rating": 5,
+      "comment": "Excellent product, highly recommend!",
+      "createdAt": "2025-01-01T00:00:00Z",
+      "updatedAt": "2025-01-01T00:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Update Review {{ tag: 'PUT', label: '/v1/reviews/:reviewId' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows users to update an existing review. You can modify the rating and comment of the review.
+
+    ### Required Attributes
+
+    <Properties>
+      <Property name="rating" type="number">
+        Rating for the product (optional).
+      </Property>
+      <Property name="comment" type="string">
+        The review comment (optional).
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Review Not Found**: If the provided review ID does not exist, a `404 Not Found` status code will be returned.
+    - **Invalid Rating**: If the rating is not between 1 and 5, a `400 Bad Request` status code will be returned.
+    - **Comment Too Short**: If the comment is fewer than 10 characters, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="PUT" label="/v1/reviews/:reviewId">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X PUT {{host}}/api/v1/reviews/unique_review_id \
+      -H "Authorization: Bearer {user_token}" \
+      --data '{
+        "rating": 4,
+        "comment": "Good product, but could be improved."
+      }'
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "unique_review_id",
+      "productId": "product_id",
+      "userId": "user_id",
+      "rating": 4,
+      "comment": "Good product, but could be improved.",
+      "createdAt": "2025-01-01T00:00:00Z",
+      "updatedAt": "2025-01-02T00:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Delete Review {{ tag: 'DELETE', label: '/v1/reviews/:reviewId' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows users to delete a review. After deletion, the review will no longer be associated with the product.
+
+    ### Edge Cases:
+    - **Review Not Found**: If the review ID does not exist, a `404 Not Found` status code will be returned.
+    - **Unauthorized**: If the user is not authorized to delete the review, a `403 Forbidden` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="DELETE" label="/v1/reviews/:reviewId">
+
+    ```bash {{ title: 'cURL' }}
+    curl -X DELETE {{host}}/api/v1/reviews/unique_review_id \
+      -H "Authorization: Bearer {user_token}"
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "message": "Review deleted successfully"
+    }
+    ```
+
+  </Col>
+</Row>

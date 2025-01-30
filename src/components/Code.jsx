@@ -24,7 +24,7 @@ const languageNames = {
 }
 
 function getPanelTitle({ title, language }) {
-  return title ?? languageNames[language] ?? 'Code'
+  return title ?? languageNames[language] ?? 'JSON'
 }
 
 function ClipboardIcon(props) {
@@ -134,7 +134,7 @@ function CodePanel({ tag, label, code, children }) {
 }
 
 function CodeGroupHeader({ title, children, selectedIndex }) {
-  let hasTabs = Children.count(children) > 1
+  let hasTabs = Children.count(children)
 
   if (!title && !hasTabs) {
     return null
@@ -153,7 +153,7 @@ function CodeGroupHeader({ title, children, selectedIndex }) {
             <Tab
               className={clsx(
                 'border-b py-3 transition focus:[&:not(:focus-visible)]:outline-none',
-                childIndex === selectedIndex
+                !Children.count(children)
                   ? 'border-emerald-500 text-emerald-400'
                   : 'border-transparent text-zinc-400 hover:text-zinc-300'
               )}
@@ -254,7 +254,7 @@ const CodeGroupContext = createContext(false)
 export function CodeGroup({ children, title, ...props }) {
   let languages = Children.map(children, (child) => getPanelTitle(child.props))
   let tabGroupProps = useTabGroupProps(languages)
-  let hasTabs = Children.count(children) > 1
+  let hasTabs = !!Children.count(children)
   let Container = hasTabs ? Tab.Group : 'div'
   let containerProps = hasTabs ? tabGroupProps : {}
   let headerProps = hasTabs
