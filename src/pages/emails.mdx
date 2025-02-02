@@ -1,0 +1,378 @@
+import { CompactTable, CompactRow, CompactCell } from '@/components/Table';
+
+export const description =
+  'This section outlines the various endpoints for managing email templates, including retrieving, creating, updating, previewing, and deleting email templates.'
+
+# Email Templates
+
+Managing email templates is essential for automating communication in an e-commerce platform. This section provides details about the endpoints for managing email template-related data.
+
+## Email Template Model
+
+Each email template in the platform is represented by a model that contains attributes like the template name, type, content, and metadata. Below is a breakdown of the properties of the email template model.
+
+### Properties
+
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>name</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Name of the email template (unique and required).</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>type</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>
+      Type of the email template. Must be one of the following:
+      <ul>
+        <li>`AWAITING_PAYMENT`</li>
+        <li>`ORDER_CONFIRMATION`</li>
+        <li>`ORDER_SHIPPED`</li>
+        <li>`ORDER_DELIVERED`</li>
+        <li>`ORDER_CANCELLED`</li>
+        <li>`PAYMENT_SUCCESS`</li>
+        <li>`EMAIL_CONFIRMATION`</li>
+        <li>`PASSWORD_RESET`</li>
+        <li>`PROMOTION`</li>
+        <li>`CART_REMINDER`</li>
+        <li>`WISHLIST_UPDATE`</li>
+        <li>`SYSTEM_ALERT`</li>
+        <li>`SUPPORT_UPDATE`</li>
+        <li>`TEST_EMAIL`</li>
+      </ul>
+    </CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>description</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Description of the email template.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>content</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>HTML content of the email template.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>title</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Title of the email template.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>subtitle</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Subtitle of the email template.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>footerTitle</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Footer title of the email template.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>footerDescription</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>Footer description of the email template.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>showEmailAddress</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Whether to show the email address in the template (default: true).</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>showPhoneNumber</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Whether to show the phone number in the template (default: true).</CompactCell>
+  </CompactRow>
+</CompactTable>
+
+---
+
+## Get All Email Templates {{ tag: 'GET', label: '/api/v1/emails' }}
+
+<Row>
+  <Col>
+
+    This endpoint retrieves a list of all email templates available in the system.
+
+    ### Edge Cases:
+    - **No Templates Found**: If no templates exist, the server will return an empty list with a `200 OK` status code.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/api/v1/emails">
+
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/emails
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    [
+      {
+        "_id": "65b12adad41ea8eb64ba1020",
+        "name": "Order Confirmation",
+        "type": "ORDER_CONFIRMATION",
+        "description": "Template for order confirmation emails.",
+        "content": "<html>...</html>",
+        "title": "Order Confirmed!",
+        "subtitle": "Thank you for your purchase.",
+        "footerTitle": "Need Help?",
+        "footerDescription": "Contact us at support@example.com.",
+        "showEmailAddress": true,
+        "showPhoneNumber": true
+      }
+    ]
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Get One Email Template {{ tag: 'GET', label: '/api/v1/emails/:type' }}
+
+<Row>
+  <Col>
+
+    This endpoint retrieves details for a specific email template by its type.
+
+    ### Edge Cases:
+    - **Invalid Type**: If the provided type does not exist, a `404 Not Found` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/api/v1/emails/:type">
+
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/emails/ORDER_CONFIRMATION
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "65b12adad41ea8eb64ba1020",
+      "name": "Order Confirmation",
+      "type": "ORDER_CONFIRMATION",
+      "description": "Template for order confirmation emails.",
+      "content": "<html>...</html>",
+      "title": "Order Confirmed!",
+      "subtitle": "Thank you for your purchase.",
+      "footerTitle": "Need Help?",
+      "footerDescription": "Contact us at support@example.com.",
+      "showEmailAddress": true,
+      "showPhoneNumber": true
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Preview Email Template {{ tag: 'GET', label: '/api/v1/emails/preview/:type' }}
+
+<Row>
+  <Col>
+
+    This endpoint generates a preview of an email template by its type.
+
+    ### Edge Cases:
+    - **Invalid Type**: If the provided type does not exist, a `404 Not Found` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/api/v1/emails/preview/:type">
+
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/emails/preview/ORDER_CONFIRMATION
+    ```
+
+    </CodeGroup>
+
+    ```html {{ title: 'Response' }}
+    <html>
+      <body>
+        <h1>Order Confirmed!</h1>
+        <p>Thank you for your purchase.</p>
+        <footer>
+          <h3>Need Help?</h3>
+          <p>Contact us at support@example.com.</p>
+        </footer>
+      </body>
+    </html>
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Create Email Template {{ tag: 'POST', label: '/api/v1/emails' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to create a new email template by providing the required details.
+
+    ### Required Attributes
+
+    <Properties>
+      <Property name="name" type="string">
+        Name of the email template (unique and required).
+      </Property>
+      <Property name="type" type="string">
+        Type of the email template (must be one of the predefined types).
+      </Property>
+      <Property name="content" type="string">
+        HTML content of the email template.
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Duplicate Type**: If the template type already exists, a `409 Conflict` status code will be returned.
+
+  </Col>
+  <Col sticky>
+    <CompactTable heading="Headers" hasHeader={false}>
+      <CompactRow>
+        <CompactCell>Authorization</CompactCell>
+        <CompactCell isLast>Bearer `{{admin_token}}`</CompactCell>
+      </CompactRow>
+    </CompactTable>
+
+    <CodeGroup title="Request" tag="POST" label="/api/v1/emails">
+
+    ```json {{ title: 'HTTP(S)' }}
+    {
+      "name": "Order Confirmation",
+      "type": "ORDER_CONFIRMATION",
+      "description": "Template for order confirmation emails.",
+      "content": "<html>...</html>",
+      "title": "Order Confirmed!",
+      "subtitle": "Thank you for your purchase.",
+      "footerTitle": "Need Help?",
+      "footerDescription": "Contact us at support@example.com.",
+      "showEmailAddress": true,
+      "showPhoneNumber": true
+    }
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "65b12adad41ea8eb64ba1020",
+      "name": "Order Confirmation",
+      "type": "ORDER_CONFIRMATION",
+      "description": "Template for order confirmation emails.",
+      "content": "<html>...</html>",
+      "title": "Order Confirmed!",
+      "subtitle": "Thank you for your purchase.",
+      "footerTitle": "Need Help?",
+      "footerDescription": "Contact us at support@example.com.",
+      "showEmailAddress": true,
+      "showPhoneNumber": true,
+      "createdAt": "2025-01-21T00:00:00Z",
+      "updatedAt": "2025-01-21T00:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Update Email Template {{ tag: 'PATCH', label: '/api/v1/emails/:type' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to update an existing email template by its type.
+
+    ### Edge Cases:
+    - **Invalid Type**: If the provided type does not exist, a `404 Not Found` status code will be returned.
+    - **Validation Errors**: If any provided data is invalid, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+    <CompactTable heading="Headers" hasHeader={false}>
+      <CompactRow>
+        <CompactCell>Authorization</CompactCell>
+        <CompactCell isLast>Bearer `{{admin_token}}`</CompactCell>
+      </CompactRow>
+    </CompactTable>
+
+    <CodeGroup title="Request" tag="PATCH" label="/api/v1/emails/:type">
+
+    ```json {{ title: 'HTTP(S)' }}
+    {
+      "title": "Updated Order Confirmation",
+      "subtitle": "We appreciate your business!"
+    }
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "65b12adad41ea8eb64ba1020",
+      "name": "Order Confirmation",
+      "type": "ORDER_CONFIRMATION",
+      "description": "Template for order confirmation emails.",
+      "content": "<html>...</html>",
+      "title": "Updated Order Confirmation",
+      "subtitle": "We appreciate your business!",
+      "footerTitle": "Need Help?",
+      "footerDescription": "Contact us at support@example.com.",
+      "showEmailAddress": true,
+      "showPhoneNumber": true,
+      "createdAt": "2025-01-20T10:00:00Z",
+      "updatedAt": "2025-01-21T12:00:00Z"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Delete Email Template {{ tag: 'DELETE', label: '/api/v1/emails/:type' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to delete an email template by its type.
+
+    ### Edge Cases:
+    - **Invalid Type**: If the provided type does not exist, a `404 Not Found` status code will be returned.
+
+  </Col>
+  <Col sticky>
+    <CompactTable heading="Headers" hasHeader={false}>
+      <CompactRow>
+        <CompactCell>Authorization</CompactCell>
+        <CompactCell isLast>Bearer `{{admin_token}}`</CompactCell>
+      </CompactRow>
+    </CompactTable>
+
+    <CodeGroup title="Request" tag="DELETE" label="/api/v1/emails/:type">
+
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/emails/ORDER_CONFIRMATION
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "status": 200,
+      "message": "Email template deleted successfully."
+    }
+    ```
+
+  </Col>
+</Row>

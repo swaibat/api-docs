@@ -1,24 +1,19 @@
 import { CompactTable, CompactRow, CompactCell } from '@/components/Table'
 
 export const description =
-  'On this page, we’ll dive into the different user endpoints you can use to manage users programmatically in an e-commerce platform.'
+  'This section outlines the various endpoints for managing users, including retrieving, creating, updating, and deleting user details.'
 
 # Users
 
-As the name suggests, users are a core part of our e-commerce platform. The reason for the platform's existence is to facilitate secure transactions and interactions with users. On this page, we'll explore the different user endpoints you can use to manage users programmatically. We'll cover how to query, create, update, and delete users, as well as handle edge cases like unauthorized access and invalid inputs. {{ className: 'lead' }}
+Users are essential for managing authentication and access control within the platform. This section provides detailed information on the endpoints used for managing users, such as retrieving, creating, updating, and deleting user details.
 
-## User model
+## User Model
 
-The user model contains all the information about your users, such as their name, email, phone number, and role. It also includes the user's verification status, device details, and other essential data for secure transactions on the platform.
+The user model represents the structure of a user in the system. Below is a breakdown of the properties of the user model.
 
 ### Properties
 
 <CompactTable>
-  <CompactRow>
-    <CompactCell code>_id</CompactCell>
-    <CompactCell type>objectId</CompactCell>
-    <CompactCell>Unique identifier for the user.</CompactCell>
-  </CompactRow>
   <CompactRow>
     <CompactCell code>name</CompactCell>
     <CompactCell type>string</CompactCell>
@@ -27,84 +22,53 @@ The user model contains all the information about your users, such as their name
   <CompactRow>
     <CompactCell code>email</CompactCell>
     <CompactCell type>string</CompactCell>
-    <CompactCell>A unique email address for the user. It should be verified. This field is required.</CompactCell>
-  </CompactRow>
-  <CompactRow>
-    <CompactCell code>phoneNumber</CompactCell>
-    <CompactCell type>string</CompactCell>
-    <CompactCell>A unique phone number for the user.</CompactCell>
+    <CompactCell>The email address of the user. This field must be unique.</CompactCell>
   </CompactRow>
   <CompactRow>
     <CompactCell code>password</CompactCell>
     <CompactCell type>string</CompactCell>
-    <CompactCell>User's password. This field is required.</CompactCell>
-  </CompactRow>
-  <CompactRow>
-    <CompactCell code>verified</CompactCell>
-    <CompactCell type>boolean</CompactCell>
-    <CompactCell>Indicates whether the user's email is verified. Default is false.</CompactCell>
+    <CompactCell>The hashed password for authentication.</CompactCell>
   </CompactRow>
   <CompactRow>
     <CompactCell code>role</CompactCell>
     <CompactCell type>string</CompactCell>
-    <CompactCell>The role of the user. It can either be "user" or "admin". Default is "user".</CompactCell>
-  </CompactRow>
-  <CompactRow>
-    <CompactCell code>fcmToken</CompactCell>
-    <CompactCell type>string</CompactCell>
-    <CompactCell>Firebase Cloud Messaging token for the user's device, used for push notifications.</CompactCell>
-  </CompactRow>
-  <CompactRow>
-    <CompactCell code>deviceIds</CompactCell>
-    <CompactCell type>array</CompactCell>
-    <CompactCell>An array of device IDs associated with the user.</CompactCell>
+    <CompactCell>The role of the user. Possible values: `USER`, `ADMIN`. Default is `USER`.</CompactCell>
   </CompactRow>
 </CompactTable>
 
 ---
 
-## List all users {{ tag: 'GET', label: '/v1/users' }}
+## Get All Users {{ tag: 'GET', label: '/api/v1/users' }}
 
 <Row>
   <Col>
 
-    This endpoint allows you to retrieve a paginated list of all your users. Only admins are authorized to access this endpoint.
+    This endpoint retrieves a list of all users.
 
     ### Edge Cases:
-    - **Unauthorized**: If the request is made by a non-admin user, the server will respond with a `403 Forbidden` status code.
-    - **No Users Found**: If no users exist, the server will respond with a `404 Not Found` status code, or return an empty list.
+    - **No Users Found**: If no users exist, the server will return an empty list with a `200 OK` status code.
 
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/users">
+    <CodeGroup title="Request" tag="GET" label="/api/v1/users">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G {{host}}/api/v1/users \
-      -H "Authorization: Bearer {admin_token}"
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/users
     ```
-
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
-    {
-      "data": [
-        {
-          "_id": "WAz8eIbvDR60rouK",
-          "name": "John Doe",
-          "email": "john.doe@example.com",
-          "phoneNumber": "+123456789",
-          "verified": true,
-          "role": "admin",
-          "deviceIds": ["device123", "device456"]
-        },
-        {
-          "_id": "hSIhXBhNe8X1d8Et"
-          // ...
-        }
-      ]
-    }
+    [
+      {
+        "_id": "65b12adad41ea8eb64ba2001",
+        "name": "John Doe",
+        "email": "johndoe@example.com",
+        "role": "USER",
+        "createdAt": "2025-01-07T15:38:13.631Z"
+      }
+    ]
     ```
 
   </Col>
@@ -112,53 +76,53 @@ The user model contains all the information about your users, such as their name
 
 ---
 
-## Invite a user {{ tag: 'POST', label: '/v1/users' }}
+## Create User {{ tag: 'POST', label: '/api/v1/users' }}
 
 <Row>
   <Col>
 
-    This endpoint allows you to add a new user to your user list in the e-commerce platform. To add a user, you must provide their name, email, and password. Phone number is optional but must be unique if provided.
+    This endpoint is used to create a new user. All required fields must be provided.
 
-    ### Required attributes
+    ### Required Attributes
 
     <Properties>
       <Property name="name" type="string">
         The full name of the user.
       </Property>
       <Property name="email" type="string">
-        The unique email address of the user.
+        A unique email address.
       </Property>
       <Property name="password" type="string">
-        User's password.
+        A secure password for authentication.
       </Property>
     </Properties>
-
-    ### Edge Cases:
-    - **Email Already Taken**: If the provided email is already in use, the server will respond with a `409 Conflict` status code.
-    - **Missing Required Fields**: If any required fields are missing, a `400 Bad Request` status code will be returned.
 
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/users">
+    <CodeGroup title="Request" tag="POST" label="/api/v1/users">
 
-    ```bash {{ title: 'cURL' }}
-    curl {{host}}/api/v1/users \
-      -H "Authorization: Bearer {admin_token}" \
-      -d name="John Doe" \
-      -d email="john.doe@example.com" \
-      -d password="securepassword123"
+    ```json {{ title: 'HTTP(S)' }}
+      {
+        "name": "Jane Doe",
+        "email": "janedoe@example.com",
+        "password": "securepassword"
+      }
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
-      "_id": "WAz8eIbvDR60rouK",
-      "name": "John Doe",
-      "email": "john.doe@example.com",
-      "role": "user",
-      "verified": false
+      "status": 201,
+      "message": "User created successfully",
+      "data": {
+          "_id": "678fb98563fba660bb189466",
+          "name": "Jane Doe",
+          "email": "janedoe@example.com",
+          "role": "USER",
+          "createdAt": "2025-01-21T15:13:09.131Z"
+      }
     }
     ```
 
@@ -167,61 +131,73 @@ The user model contains all the information about your users, such as their name
 
 ---
 
-## Retrieve a user {{ tag: 'GET', label: '/v1/users/:id' }}
+## Update User {{ tag: 'PUT', label: '/api/v1/users/:id' }}
 
 <Row>
   <Col>
 
-    This endpoint allows you to retrieve a user by providing their ID. Only admins can access this endpoint. Refer to [the user model](#the-user-model) at the top of this page for details about user properties.
+    This endpoint allows you to update the details of an existing user.
 
-    ### Edge Cases:
-    - **Unauthorized**: If a non-admin user tries to access this endpoint, the server will return a `403 Forbidden` status code.
-    - **User Not Found**: If no user with the provided ID exists, the server will return a `404 Not Found` status code.
+    ### Required Attributes
+
+    <Properties>
+      <Property name="name" type="string">
+        Updated name of the user (optional).
+      </Property>
+      <Property name="email" type="string">
+        Updated email of the user (optional).
+      </Property>
+    </Properties>
 
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/users/WAz8eIbvDR60rouK">
+    <CodeGroup title="Request" tag="PUT" label="/api/v1/users/:id">
 
-    ```bash {{ title: 'cURL' }}
-    curl {{host}}/api/v1/users/WAz8eIbvDR60rouK \
-      -H "Authorization: Bearer {admin_token}"
-    ```
-
-    ```js
-    import ApiClient from '@example/ecommerce-api'
-
-    const client = new ApiClient(adminToken)
-
-    await client.users.get('WAz8eIbvDR60rouK')
-    ```
-
-    ```python
-    from ecommerce_api import ApiClient
-
-    client = ApiClient(adminToken)
-
-    client.users.get("WAz8eIbvDR60rouK")
-    ```
-
-    ```php
-    $client = new \Ecommerce\ApiClient($adminToken);
-
-    $client->users->get('WAz8eIbvDR60rouK');
+    ```json {{ title: 'HTTP(S)' }}
+      {
+        "name": "Updated Name"
+      }
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
-      "_id": "WAz8eIbvDR60rouK",
-      "name": "John Doe",
-      "email": "john.doe@example.com",
-      "phoneNumber": "+123456789",
-      "verified": true,
-      "role": "user",
-      "deviceIds": ["device123"],
-      "fcmToken": "fcm_token_example"
+      "_id": "678fb98563fba660bb189467",
+      "name": "Updated Name",
+      "email": "janedoe@example.com",
+      "role": "USER"
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Delete User {{ tag: 'DELETE', label: 'api/v1/users/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to delete a user by their ID.
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="DELETE" label="api/v1/users/:id">
+
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/users/678fb98563fba660bb189467
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "status": 200,
+      "message": "User deleted successfully."
     }
     ```
 

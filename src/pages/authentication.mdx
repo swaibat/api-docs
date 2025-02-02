@@ -11,7 +11,7 @@ The authentication process in the ALX app includes methods for logging in using 
 
 ---
 
-## Login {{ tag: 'POST', label: '/v1/auth/login' }}
+## Login {{ tag: 'POST', label: '/api/v1/auth/login' }}
 
 <Row>
   <Col>
@@ -24,22 +24,24 @@ The authentication process in the ALX app includes methods for logging in using 
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/auth/login">
+    <CodeGroup title="Request" tag="POST" label="/api/v1/auth/login">
 
     ```bash {{ title: 'Login with email and password' }}
-    curl -X POST https://api.alx-ecommerce.com/v1/auth/login \
-        -H "Content-Type: application/json" \
-        -d '{"email": "user@example.com", "password": "yourpassword"}'
+      {
+        "email": "user@example.com",
+         "password": "yourPassword"
+      }
     ```
 
     </CodeGroup>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/auth/login">
+    <CodeGroup title="Request" tag="POST" label="api/v1/auth/login">
 
     ```bash {{ title: 'Login with phone number and password' }}
-    curl -X POST https://api.alx-ecommerce.com/v1/auth/login \
-        -H "Content-Type: application/json" \
-        -d '{"phoneNumber": "+1234567890", "password": "yourpassword"}'
+      {
+        "phoneNumber": "+1234567890",
+        "password": "yourPassword"
+      }
     ```
 
     </CodeGroup>
@@ -73,12 +75,10 @@ The authentication process in the ALX app includes methods for logging in using 
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/auth/send-otp">
+    <CodeGroup title="Request" tag="POST" label="/api/v1/auth/otp/send">
 
-    ```bash {{ title: 'Send OTP to email or phone number' }}
-    curl -X POST https://api.alx-ecommerce.com/v1/auth/send-otp \
-        -H "Content-Type: application/json" \
-        --data '{"authId": "user@example.com"}'
+    ```json {{ title: 'HTTP(S)' }}
+      {"authId": "user@example.com"}
     ```
 
     </CodeGroup>
@@ -97,7 +97,7 @@ The authentication process in the ALX app includes methods for logging in using 
 
 ---
 
-## Verify OTP {{ tag: 'POST', label: '/v1/auth/verify-otp' }}
+## Verify OTP {{ tag: 'POST', label: '/api/v1/auth/verify-otp' }}
 
 <Row>
   <Col>
@@ -110,12 +110,13 @@ The authentication process in the ALX app includes methods for logging in using 
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/auth/verify-otp">
+    <CodeGroup title="Request" tag="POST" label="/api/v1/auth/verify-otp">
 
-    ```bash {{ title: 'Verify OTP request' }}
-    curl -X POST https://api.alx-ecommerce.com/v1/auth/verify-otp \
-        -H "Content-Type: application/json" \
-        --data '{"authId": "user@example.com", "otp": "123456"}'
+    ```json {{ title: 'HTTP(S)' }}
+        {
+          "authId": "user@example.com",
+           "otp": "0000"
+        }'
     ```
 
     </CodeGroup>
@@ -136,7 +137,7 @@ The authentication process in the ALX app includes methods for logging in using 
 
 ---
 
-## Register Account {{ tag: 'POST', label: '/v1/auth/register' }}
+## Register Account {{ tag: 'POST', label: '/api/v1/auth/register' }}
 
 <Row>
   <Col>
@@ -148,6 +149,9 @@ The authentication process in the ALX app includes methods for logging in using 
     <Properties>
       <Property name="name" type="string">
         Full name of the user.
+      </Property>
+      <Property name="username" type="string">
+       Username of the user.
       </Property>
       <Property name="email" type="string">
         Email address of the user.
@@ -163,12 +167,16 @@ The authentication process in the ALX app includes methods for logging in using 
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/auth/register">
+    <CodeGroup title="Request" tag="POST" label="/api/v1/auth/register">
 
-    ```bash {{ title: 'Example registration request' }}
-    curl -X POST https://api.alx-ecommerce.com/v1/auth/register \
-        -H "Content-Type: application/json" \
-        --data '{"name": "John Doe", "email": "johndoe@example.com", "phoneNumber": "+1234567890", "password": "securepassword"}'
+    ```json {{ title: 'Registration' }}
+      {
+        "name": "John Doe",
+        "username": "doe",
+        "email": "johndoe@example.com",
+        "phoneNumber": "+1234567890",
+        "password": "password"
+      }
     ```
 
     </CodeGroup>
@@ -176,10 +184,14 @@ The authentication process in the ALX app includes methods for logging in using 
     ```json {{ title: 'Response' }}
     {
       "status": 201,
-      "message": "Account created successfully",
+      "message": "Verification code has been sent to your email.",
       "data": {
-        "userId": "new_user_id",
-        "authToken": "new_user_auth_token"
+        "_id": "679fa93b05c993cde2713653",
+        "name": "John Doe",
+        "username": "doe",
+        "email": "johndoe@example.com",
+        "phoneNumber": "+1234567890",
+        ...
       }
     }
     ```
@@ -204,10 +216,8 @@ The authentication process in the ALX app includes methods for logging in using 
 
     <CodeGroup title="Request" tag="POST" label="/v1/auth/reset-password">
 
-    ```bash {{ title: 'Password reset request' }}
-    curl -X POST https://api.alx-ecommerce.com/v1/auth/reset-password \
-        -H "Content-Type: application/json" \
-        --data '{"email": "user@example.com"}'
+    ```json {{ title: 'Password reset request' }}
+      {"email": "user@example.com"}
     ```
 
     </CodeGroup>

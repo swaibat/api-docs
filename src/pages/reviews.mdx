@@ -7,91 +7,107 @@ export const description =
 
 Managing reviews is an essential feature for an e-commerce platform, enabling customers to share their experiences with products. In this section, we will discuss the endpoints for creating, updating, and deleting reviews for products.
 
-## Review Model
+## Review model
 
-Each review in the platform is represented by a model that contains attributes like the product ID, user ID, rating, and comment. Below is a breakdown of the properties of the review model.
+Each review in the platform is represented by a model that contains attributes like the user ID, product ID, rating, comment, and timestamp. Below is a breakdown of the properties of the review model.
 
 ### Properties
 
 <CompactTable>
   <CompactRow>
-    <CompactCell code>_id</CompactCell>
-    <CompactCell type>objectId</CompactCell>
-    <CompactCell>Unique identifier for the review.</CompactCell>
+    <CompactCell code>userId</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The ID of the user who submitted the review.</CompactCell>
   </CompactRow>
   <CompactRow>
     <CompactCell code>productId</CompactCell>
-    <CompactCell type>objectId</CompactCell>
-    <CompactCell>Unique identifier for the product being reviewed.</CompactCell>
-  </CompactRow>
-  <CompactRow>
-    <CompactCell code>userId</CompactCell>
-    <CompactCell type>objectId</CompactCell>
-    <CompactCell>Unique identifier for the user who wrote the review.</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The ID of the product being reviewed.</CompactCell>
   </CompactRow>
   <CompactRow>
     <CompactCell code>rating</CompactCell>
     <CompactCell type>number</CompactCell>
-    <CompactCell>Rating given by the user (between 1 and 5).</CompactCell>
+    <CompactCell>The rating given to the product, typically a number between 1 and 5.</CompactCell>
   </CompactRow>
   <CompactRow>
     <CompactCell code>comment</CompactCell>
     <CompactCell type>string</CompactCell>
-    <CompactCell>Comment written by the user about the product.</CompactCell>
+    <CompactCell>The comment or review text written by the user.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>createdAt</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The timestamp of when the review was created.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>updatedAt</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The timestamp of when the review was last updated.</CompactCell>
   </CompactRow>
 </CompactTable>
 
-
 ---
 
-## Create Review {{ tag: 'POST', label: '/v1/reviews/:productId' }}
+## Create review {{ tag: 'POST', label: '/v1/reviews' }}
 
 <Row>
   <Col>
 
-    This endpoint allows users to create a new review for a product. The request should include the product ID, rating, and comment.
+    This endpoint allows you to create a new review for a product. You must provide the product ID, rating, and comment.
 
-    ### Required Attributes
+    ### Required attributes
 
     <Properties>
+      <Property name="userId" type="string">
+        The ID of the user submitting the review.
+      </Property>
+      <Property name="productId" type="string">
+        The ID of the product being reviewed.
+      </Property>
       <Property name="rating" type="number">
-        Rating for the product (1-5).
+        The rating given to the product.
       </Property>
       <Property name="comment" type="string">
-        The review comment (minimum 10 characters).
+        The review text submitted by the user.
       </Property>
     </Properties>
 
     ### Edge Cases:
-    - **Product Not Found**: If the product ID does not exist, a `404 Not Found` status code will be returned.
+    - **Missing Required Fields**: If any required fields are missing, a `400 Bad Request` status code will be returned.
     - **Invalid Rating**: If the rating is not between 1 and 5, a `400 Bad Request` status code will be returned.
-    - **Comment Too Short**: If the comment is fewer than 10 characters, a `400 Bad Request` status code will be returned.
 
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/reviews/:productId">
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{user_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    ```bash {{ title: 'cURL' }}
-    curl -X POST {{host}}/api/v1/reviews/product_id \
-      -H "Authorization: Bearer {user_token}" \
-      --data '{
+    <CodeGroup title="Request" tag="POST" label="/api/v1/reviews">
+
+    ```json {{ title: 'HTTP(S)' }}
+      {
+        "userId": "user123",
+        "productId": "product123",
         "rating": 5,
-        "comment": "Excellent product, highly recommend!"
-      }'
+        "comment": "Great product! Highly recommend."
+      }
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
-      "_id": "unique_review_id",
-      "productId": "product_id",
-      "userId": "user_id",
+      "_id": "64e8d6aeb8d6f90017c0a8d4",
+      "userId": "user123",
+      "productId": "product123",
       "rating": 5,
-      "comment": "Excellent product, highly recommend!",
-      "createdAt": "2025-01-01T00:00:00Z",
-      "updatedAt": "2025-01-01T00:00:00Z"
+      "comment": "Great product! Highly recommend.",
+      "createdAt": "2025-01-19T00:00:00Z",
+      "updatedAt": "2025-01-19T00:00:00Z"
     }
     ```
 
@@ -100,41 +116,116 @@ Each review in the platform is represented by a model that contains attributes l
 
 ---
 
-## Update Review {{ tag: 'PUT', label: '/v1/reviews/:reviewId' }}
+## Get Reviews by Product {{ tag: 'GET', label: '/api/v1/reviews/product/:productId' }}
 
 <Row>
   <Col>
 
-    This endpoint allows users to update an existing review. You can modify the rating and comment of the review.
+    This endpoint retrieves all reviews associated with a specific product ID. It supports optional query parameters for pagination and filtering.
 
-    ### Required Attributes
+    ### Query Parameters
 
     <Properties>
-      <Property name="rating" type="number">
-        Rating for the product (optional).
+      <Property name="page" type="number">
+        The page number for pagination (default: 1).
       </Property>
-      <Property name="comment" type="string">
-        The review comment (optional).
+      <Property name="limit" type="number">
+        The number of reviews to return per page (default: 10).
+      </Property>
+      <Property name="sort" type="string">
+        The sorting order for reviews. Possible values: `newest`, `oldest`, `highestRating`, `lowestRating`.
       </Property>
     </Properties>
 
     ### Edge Cases:
-    - **Review Not Found**: If the provided review ID does not exist, a `404 Not Found` status code will be returned.
-    - **Invalid Rating**: If the rating is not between 1 and 5, a `400 Bad Request` status code will be returned.
-    - **Comment Too Short**: If the comment is fewer than 10 characters, a `400 Bad Request` status code will be returned.
+    - **No Reviews Found**: If no reviews exist for the product, the server will return an empty list with a `200 OK` status code.
+    - **Invalid Product ID**: If the provided `productId` is invalid, a `400 Bad Request` status code will be returned.
 
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="PUT" label="/v1/reviews/:reviewId">
+    <CodeGroup title="Request" tag="GET" label="/api/v1/reviews/product/:productId">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X PUT {{host}}/api/v1/reviews/unique_review_id \
-      -H "Authorization: Bearer {user_token}" \
-      --data '{
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/reviews/product/product123?page=1&limit=10&sort=newest
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "data": [
+        {
+          "_id": "64e8d6aeb8d6f90017c0a8d4",
+          "userId": "user123",
+          "productId": "product123",
+          "rating": 5,
+          "comment": "Great product! Highly recommend.",
+          "createdAt": "2025-01-19T00:00:00Z",
+          "updatedAt": "2025-01-19T00:00:00Z"
+        },
+        {
+          "_id": "64e8d6aeb8d6f90017c0a8d5",
+          "userId": "user456",
+          "productId": "product123",
+          "rating": 4,
+          "comment": "Good product, but could be improved.",
+          "createdAt": "2025-01-20T00:00:00Z",
+          "updatedAt": "2025-01-20T00:00:00Z"
+        }
+      ],
+      "pagination": {
+        "page": 1,
+        "limit": 10,
+        "total": 2
+      }
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Update review {{ tag: 'PATCH', label: '/api/v1/reviews/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to update a specific review by its ID. You must provide the updated rating or comment.
+
+    ### Required attributes
+
+    <Properties>
+      <Property name="rating" type="number">
+        The new rating for the product.
+      </Property>
+      <Property name="comment" type="string">
+        The updated review text.
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Review Not Found**: If the specified review does not exist, the server will return a `404 Not Found` status code.
+    - **Invalid Rating**: If the rating is not between 1 and 5, a `400 Bad Request` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{user_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
+
+    <CodeGroup title="Request" tag="PATCH" label="/v1/reviews/:id">
+
+    ```json {{ title: 'HTTP(S)' }}
+      {
         "rating": 4,
         "comment": "Good product, but could be improved."
-      }'
+      }
     ```
 
     </CodeGroup>
@@ -142,12 +233,12 @@ Each review in the platform is represented by a model that contains attributes l
     ```json {{ title: 'Response' }}
     {
       "_id": "unique_review_id",
-      "productId": "product_id",
-      "userId": "user_id",
+      "userId": "user123",
+      "productId": "product123",
       "rating": 4,
       "comment": "Good product, but could be improved.",
-      "createdAt": "2025-01-01T00:00:00Z",
-      "updatedAt": "2025-01-02T00:00:00Z"
+      "createdAt": "2025-01-19T00:00:00Z",
+      "updatedAt": "2025-01-20T00:00:00Z"
     }
     ```
 
@@ -156,31 +247,36 @@ Each review in the platform is represented by a model that contains attributes l
 
 ---
 
-## Delete Review {{ tag: 'DELETE', label: '/v1/reviews/:reviewId' }}
+## Delete review {{ tag: 'DELETE', label: '/api/v1/reviews/:id' }}
 
 <Row>
   <Col>
 
-    This endpoint allows users to delete a review. After deletion, the review will no longer be associated with the product.
+    This endpoint allows you to delete a specific review by its ID. If successful, the review will no longer be available in the list of reviews for the product.
 
     ### Edge Cases:
-    - **Review Not Found**: If the review ID does not exist, a `404 Not Found` status code will be returned.
-    - **Unauthorized**: If the user is not authorized to delete the review, a `403 Forbidden` status code will be returned.
+    - **Review Not Found**: If the specified review does not exist, the server will return a `404 Not Found` status code.
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{user_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="DELETE" label="/v1/reviews/:reviewId">
+    <CodeGroup title="Request" tag="DELETE" label="/api/v1/reviews/:id">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X DELETE {{host}}/api/v1/reviews/unique_review_id \
-      -H "Authorization: Bearer {user_token}"
+    ```json {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/reviews/634dd5f9cd3498370afbdba4
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
+      "status": 200,
       "message": "Review deleted successfully"
     }
     ```

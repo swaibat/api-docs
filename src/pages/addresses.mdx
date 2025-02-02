@@ -15,11 +15,6 @@ Each address in the platform is represented by a model that contains attributes 
 
 <CompactTable>
   <CompactRow>
-    <CompactCell code>_id</CompactCell>
-    <CompactCell type>objectId</CompactCell>
-    <CompactCell>Unique identifier for the address.</CompactCell>
-  </CompactRow>
-  <CompactRow>
     <CompactCell code>phoneNumber</CompactCell>
     <CompactCell type>string</CompactCell>
     <CompactCell>The phone number associated with the address.</CompactCell>
@@ -104,27 +99,32 @@ Each address in the platform is represented by a model that contains attributes 
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/addresses">
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    ```bash {{ title: 'cURL' }}
-    curl {{host}}/api/v1/addresses \
-      -H "Authorization: Bearer {user_token}" \
-      --data '{
-        "phoneNumber": "123456789",
+    <CodeGroup title="Request" tag="POST" label="/api/v1/addresses">
+
+    ```json {{ title: 'HTTP(S)' }}
+      {
+        "phoneNumber": "+123456789",
         "email": "user@example.com",
         "addressName": "Home",
         "country": "Uganda",
         "city": "Kampala",
         "state": "Central",
         "mainAddress": "123 Main St"
-      }'
+      }
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
-      "_id": "unique_address_id",
+      "_id": "64e8d6aeb8d6f90017c0a8d4",
       "phoneNumber": "123456789",
       "email": "user@example.com",
       "addressName": "Home",
@@ -143,7 +143,7 @@ Each address in the platform is represented by a model that contains attributes 
 
 ---
 
-## List all addresses {{ tag: 'GET', label: '/v1/addresses' }}
+## List all addresses {{ tag: 'GET', label: '/api/v1/addresses' }}
 
 <Row>
   <Col>
@@ -156,11 +156,17 @@ Each address in the platform is represented by a model that contains attributes 
   </Col>
   <Col sticky>
 
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
+
     <CodeGroup title="Request" tag="GET" label="/v1/addresses">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G {{host}}/api/v1/addresses \
-      -H "Authorization: Bearer {user_token}"
+    ```bash {{ title: 'HTTP(S)' }}
+    http://{{host}}/api/v1/addresses
     ```
 
     </CodeGroup>
@@ -199,7 +205,7 @@ Each address in the platform is represented by a model that contains attributes 
 
 ---
 
-## Get addresses of the authenticated user {{ tag: 'GET', label: '/v1/addresses/me' }}
+## Get addresses of the authenticated user {{ tag: 'GET', label: '/api/v1/addresses/me' }}
 
 <Row>
   <Col>
@@ -211,12 +217,17 @@ Each address in the platform is represented by a model that contains attributes 
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{user_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/addresses/me">
+    <CodeGroup title="Request" tag="GET" label="/api/v1/addresses/me">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G {{host}}/api/v1/addresses/me \
-      -H "Authorization: Bearer {user_token}"
+    ```json {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/addresses/me
     ```
 
     </CodeGroup>
@@ -244,7 +255,7 @@ Each address in the platform is represented by a model that contains attributes 
 
 ---
 
-## Update address {{ tag: 'PATCH', label: '/v1/addresses/:id' }}
+## Update address {{ tag: 'PATCH', label: '/api/v1/addresses/:id' }}
 
 <Row>
   <Col>
@@ -284,12 +295,17 @@ Each address in the platform is represented by a model that contains attributes 
   </Col>
   <Col sticky>
 
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{user_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
+
     <CodeGroup title="Request" tag="PATCH" label="/v1/addresses/:id">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X PATCH {{host}}/api/v1/addresses/unique_address_id \
-      -H "Authorization: Bearer {user_token}" \
-      --data '{
+    ```json {{ title: 'HTTP(S)' }}
+      {
         "phoneNumber": "123456789",
         "email": "user@example.com",
         "addressName": "Updated Address",
@@ -297,7 +313,7 @@ Each address in the platform is represented by a model that contains attributes 
         "city": "Kampala",
         "state": "Central",
         "mainAddress": "123 Updated St"
-      }'
+      }
     ```
 
     </CodeGroup>
@@ -323,7 +339,7 @@ Each address in the platform is represented by a model that contains attributes 
 
 ---
 
-## Delete address {{ tag: 'DELETE', label: '/v1/addresses/:id' }}
+## Delete address {{ tag: 'DELETE', label: '/api/v1/addresses/:id' }}
 
 <Row>
   <Col>
@@ -335,23 +351,24 @@ Each address in the platform is represented by a model that contains attributes 
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{user_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="DELETE" label="/v1/addresses/:id">
+    <CodeGroup title="Request" tag="DELETE" label="/api/v1/addresses/:id">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X DELETE {{host}}/api/v1/addresses/unique_address_id \
-      -H "Authorization: Bearer {user_token}" \
-      --data '{
-        "receiverId": "634dd5f9cd3498370afbdba4",
-        "senderId": "63582d9ff8614efe18526c9e",
-        "message": "hello doe"
-      }'
+    ```json {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/addresses/634dd5f9cd3498370afbdba4
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
+      "status": 200,
       "message": "Address deleted successfully"
     }
     ```

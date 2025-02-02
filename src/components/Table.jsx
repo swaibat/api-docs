@@ -61,11 +61,11 @@ export function Col({ children, sticky = false }) {
 export function CompactTable({ children, heading, hasHeader = true }) {
   const rows = React.Children.toArray(children);
   return (
-    <div className="mb-3 rounded-lg border-collapse border border-gray-300 dark:border-gray-700 overflow-hidden">
+    <div className="mb-3 rounded-lg border-collapse border border-zinc-700 dark:border-zinc-800 overflow-hidden">
       {heading && (
         <thead>
-          <tr className="w-full bg-zinc-100 dark:bg-zinc-800 my-1 text-zinc-900 dark:text-zinc-200">
-            <th className="pb-0 mb-1 w-full px-3 font-medium text-zinc-900 dark:text-zinc-200 border-b border-gray-300 dark:border-gray-700 text-left">
+          <tr className="w-full bg-zinc-100 dark:bg-white/2.5 my-1 text-zinc-900 dark:text-zinc-200">
+            <th className="pb-0 mb-1 w-full px-3 font-medium text-zinc-900 dark:text-zinc-200 border-b border-zinc-700 dark:border-zinc-800 text-left">
               {heading}
             </th>
             <th />
@@ -75,14 +75,14 @@ export function CompactTable({ children, heading, hasHeader = true }) {
       <table className={"my-0 min-w-full table-auto text-left text-xs text-zinc-600 dark:text-zinc-300"}>
         {hasHeader && (
           <thead>
-            <tr className="bg-zinc-100 dark:bg-zinc-800 border-b border-gray-300 dark:border-gray-700">
-              <th className="border-r py-2 px-3 font-medium text-zinc-900 dark:text-zinc-200 border-b border-gray-300 dark:border-gray-700">
+            <tr className="bg-zinc-100 dark:bg-white/2.5 border-b border-zinc-700 dark:border-zinc-800">
+              <th className="border-r py-2 px-3 font-medium text-zinc-900 dark:text-zinc-200 border-b border-zinc-700 dark:border-zinc-800">
                 Property
               </th>
-              <th className="border-r py-2 px-3 font-medium text-zinc-900 dark:text-zinc-200 border-b border-gray-300 dark:border-gray-700">
+              <th className="border-r py-2 px-3 font-medium text-zinc-900 dark:text-zinc-200 border-b border-zinc-700 dark:border-zinc-800">
                 Type
               </th>
-              <th className="py-2 px-3 font-medium text-zinc-900 dark:text-zinc-200 border-b border-gray-300 dark:border-gray-700">
+              <th className="py-2 px-3 font-medium text-zinc-900 dark:text-zinc-200 border-b border-zinc-700 dark:border-zinc-800">
                 Description
               </th>
             </tr>
@@ -103,7 +103,7 @@ export function CompactTable({ children, heading, hasHeader = true }) {
 export function CompactRow({ children, isLast = false }) {
   return (
     <tr className={clsx(
-      "border-b border-gray-300 dark:border-gray-700",
+      "border-b border-zinc-700 dark:border-zinc-800",
       isLast && "border-b-0"
     )}>
       {children}
@@ -115,18 +115,19 @@ export function CompactCell({ children, className, code = false, type = false, i
   return (
     <td
       className={clsx(
-        "py-2 px-3 border-gray-300 dark:border-gray-700", 
+        "py-2 px-3 border-zinc-700 dark:border-zinc-800", 
         !isLast && "border-r",  // Add right border unless it's the last cell
         className
       )}
     >
-      {code ? (
+      {/* {code ? (
         <code className="text-sm bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">{children}</code>
       ) : type ? (
         <span className="text-xs text-zinc-500 dark:text-zinc-500">{children}</span>
       ) : (
         children
-      )}
+      )} */}
+      {children}
     </td>
   )
 }

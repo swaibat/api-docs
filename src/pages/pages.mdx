@@ -15,11 +15,6 @@ Each page in the platform is represented by a model that contains attributes lik
 
 <CompactTable>
   <CompactRow>
-    <CompactCell code>_id</CompactCell>
-    <CompactCell type>objectId</CompactCell>
-    <CompactCell>Unique identifier for the page.</CompactCell>
-  </CompactRow>
-  <CompactRow>
     <CompactCell code>type</CompactCell>
     <CompactCell type>enum</CompactCell>
     <CompactCell>
@@ -55,7 +50,7 @@ Each page in the platform is represented by a model that contains attributes lik
 
 ---
 
-## Create page content {{ tag: 'POST', label: '/v1/pages' }}
+## Create page content {{ tag: 'POST', label: '/api/v1/pages' }}
 
 <Row>
   <Col>
@@ -80,44 +75,20 @@ Each page in the platform is represented by a model that contains attributes lik
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/pages">
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    ```bash {{ title: 'cURL' }}
-    curl {{host}}/api/v1/pages \
-      -H "Authorization: Bearer {admin_token}" \
-      -d type="PRIVACY_POLICY" \
-      -d content="Privacy policy content goes here."
-    ```
+    <CodeGroup title="Request" tag="POST" label="/api/v1/pages">
 
-    ```js
-    import ApiClient from '@example/ecommerce-api'
-
-    const client = new ApiClient(adminToken)
-
-    await client.pages.create({
-      type: 'PRIVACY_POLICY',
-      content: 'Privacy policy content goes here.',
-    })
-    ```
-
-    ```python
-    from ecommerce_api import ApiClient
-
-    client = ApiClient(adminToken)
-
-    client.pages.create(
-      type="PRIVACY_POLICY",
-      content="Privacy policy content goes here.",
-    )
-    ```
-
-    ```php
-    $client = new \Ecommerce\ApiClient($adminToken);
-
-    $client->pages->create([
-      'type' => 'PRIVACY_POLICY',
-      'content' => 'Privacy policy content goes here.',
-    ]);
+    ```json {{ title: 'HTTP(S)' }}
+    {
+      "type": "PRIVACY_POLICY",
+      "content": "Privacy policy content goes here.",
+    }
     ```
 
     </CodeGroup>
@@ -138,7 +109,7 @@ Each page in the platform is represented by a model that contains attributes lik
 
 ---
 
-## List all pages {{ tag: 'GET', label: '/v1/pages' }}
+## List all pages {{ tag: 'GET', label: '/api/v1/pages' }}
 
 <Row>
   <Col>
@@ -151,34 +122,12 @@ Each page in the platform is represented by a model that contains attributes lik
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/pages">
+    <CodeGroup title="Request" tag="GET" label="/api/v1/pages">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G {{host}}/api/v1/pages \
-      -H "Authorization: Bearer {admin_token}"
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/pages
     ```
 
-    ```js
-    import ApiClient from '@example/ecommerce-api'
-
-    const client = new ApiClient(adminToken)
-
-    await client.pages.list()
-    ```
-
-    ```python
-    from ecommerce_api import ApiClient
-
-    client = ApiClient(adminToken)
-
-    client.pages.list()
-    ```
-
-    ```php
-    $client = new \Ecommerce\ApiClient($adminToken);
-
-    $client->pages->list();
-    ```
 
     </CodeGroup>
 
@@ -223,34 +172,11 @@ Each page in the platform is represented by a model that contains attributes lik
 
   </Col>
   <Col sticky>
+  
+    <CodeGroup title="Request" tag="GET" label="/api/v1/pages/PRIVACY_POLICY">
 
-    <CodeGroup title="Request" tag="GET" label="/v1/pages/PRIVACY_POLICY">
-
-    ```bash {{ title: 'cURL' }}
-    curl {{host}}/api/v1/pages/PRIVACY_POLICY \
-      -H "Authorization: Bearer {admin_token}"
-    ```
-
-    ```js
-    import ApiClient from '@example/ecommerce-api'
-
-    const client = new ApiClient(adminToken)
-
-    await client.pages.get('PRIVACY_POLICY')
-    ```
-
-    ```python
-    from ecommerce_api import ApiClient
-
-    client = ApiClient(adminToken)
-
-    client.pages.get("PRIVACY_POLICY")
-    ```
-
-    ```php
-    $client = new \Ecommerce\ApiClient($adminToken);
-
-    $client->pages->get('PRIVACY_POLICY');
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/pages/PRIVACY_POLICY
     ```
 
     </CodeGroup>
@@ -269,7 +195,7 @@ Each page in the platform is represented by a model that contains attributes lik
 
 ---
 
-## Update page content {{ tag: 'PATCH', label: '/v1/pages/:id' }}
+## Update page content {{ tag: 'PATCH', label: '/api/v1/pages/:id' }}
 
 <Row>
   <Col>
@@ -293,51 +219,27 @@ Each page in the platform is represented by a model that contains attributes lik
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="PATCH" label="/v1/pages/:id">
+    <CodeGroup title="Request" tag="PATCH" label="/api/v1/pages/:id">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X PATCH {{host}}/api/v1/pages/unique_page_id \
-      -H "Authorization: Bearer {admin_token}" \
-      -d content="Updated privacy policy content."
-    ```
-
-    ```js
-    import ApiClient from '@example/ecommerce-api'
-
-    const client = new ApiClient(adminToken)
-
-    await client.pages.update('unique_page_id', {
-      content: 'Updated privacy policy content.',
-      isActive: true,
-    })
-    ```
-
-    ```python
-    from ecommerce_api import ApiClient
-
-    client = ApiClient(adminToken)
-
-    client.pages.update("unique_page_id", {
+    ```json {{ title: 'HTTP(S)' }}
+    {
+      "type": "PRIVACY_POLICY",
       "content": "Updated privacy policy content.",
-      "isActive": True,
-    })
+      "isActive": true
+    }
     ```
-
-    ```php
-    $client = new \Ecommerce\ApiClient($adminToken);
-
-    $client->pages->update('unique_page_id', [
-      'content' => 'Updated privacy policy content.',
-      'isActive' => true,
-    ]);
-    ```
-
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
-      "_id": "unique_page_id",
+      "_id": "63582d9ff8614efe18526c9e",
       "type": "PRIVACY_POLICY",
       "content": "Updated privacy policy content.",
       "isActive": true,
@@ -350,7 +252,7 @@ Each page in the platform is represented by a model that contains attributes lik
 
 ---
 
-## Delete page content {{ tag: 'DELETE', label: '/v1/pages/:id' }}
+## Delete page content {{ tag: 'DELETE', label: '/api/v1/pages/:id' }}
 
 <Row>
   <Col>
@@ -362,40 +264,23 @@ Each page in the platform is represented by a model that contains attributes lik
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="DELETE" label="/v1/pages/:id">
+    <CodeGroup title="Request" tag="DELETE" label="/api/v1/pages/:id">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X DELETE {{host}}/api/v1/pages/unique_page_id \
-      -H "Authorization: Bearer {admin_token}"
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/pages/63582d9ff8614efe18526c9e
     ```
-
-    ```js
-    import ApiClient from '@example/ecommerce-api'
-
-    const client = new ApiClient(adminToken)
-
-    await client.pages.delete('unique_page_id')
-    ```
-
-    ```python
-    from ecommerce_api import ApiClient
-
-    client = ApiClient(adminToken)
-
-    client.pages.delete("unique_page_id")
-    ```
-
-    ```php
-    $client = new \Ecommerce\ApiClient($adminToken);
-
-    $client->pages->delete('unique_page_id');
-    ```
-
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
+      "status": 200,
       "message": "Page deleted successfully."
     }
     ```

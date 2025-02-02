@@ -1,0 +1,236 @@
+import { CompactTable, CompactRow, CompactCell } from '@/components/Table'
+
+
+export const description =
+  'This section outlines the various endpoints for managing notifications, including creating, retrieving, and marking notifications as read.'
+
+# Notifications
+
+Notifications are used to inform users about important events or updates within the platform. This section provides detailed information on the endpoints used for managing notifications, such as creating, retrieving, and marking notifications as read.
+
+## Notification Model
+
+The notification model represents the structure of a notification in the system. Below is a breakdown of the properties of the notification model.
+
+### Properties
+
+<CompactTable>
+  <CompactRow>
+    <CompactCell code>userId</CompactCell>
+    <CompactCell type>ObjectId</CompactCell>
+    <CompactCell>The ID of the user who will receive the notification. This field is required.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>type</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>
+      The type of notification. Possible values are:
+      <ul>
+        <li>`ORDER_CONFIRMATION`</li>
+        <li>`ORDER_SHIPPED`</li>
+        <li>`ORDER_DELIVERED`</li>
+        <li>`ORDER_CANCELLED`</li>
+        <li>`PAYMENT_SUCCESS`</li>
+        <li>`EMAIL_CONFIRMATION`</li>
+        <li>`PASSWORD_RESET`</li>
+        <li>`PROMOTION`</li>
+        <li>`CART_REMINDER`</li>
+        <li>`WISHLIST_UPDATE`</li>
+        <li>`SYSTEM_ALERT`</li>
+        <li>`SUPPORT_UPDATE`</li>
+        <li>`TEST_EMAIL`</li>
+      </ul>
+      This field is required.
+    </CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>title</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The title of the notification. This field is required.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>content</CompactCell>
+    <CompactCell type>string</CompactCell>
+    <CompactCell>The content or message of the notification. This field is required.</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell code>isRead</CompactCell>
+    <CompactCell type>boolean</CompactCell>
+    <CompactCell>Indicates whether the notification has been read. Defaults to `false`.</CompactCell>
+  </CompactRow>
+</CompactTable>
+
+---
+
+<Note>
+    Notifications for different events (e.g., order confirmation, payment success) are typically created automatically within the app using the `sendNotification` function located at `/notifications/services/`. This function handles the logic for triggering notifications based on specific actions or events.
+</Note>
+
+## Create Notification {{ tag: 'POST', label: '/api/v1/notification' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows an admin to create a new notification for a user. All required fields must be provided.
+
+    ### Required Attributes
+
+    <Properties>
+      <Property name="userId" type="ObjectId">
+        The ID of the user who will receive the notification.
+      </Property>
+      <Property name="type" type="string">
+        The type of notification.
+      </Property>
+      <Property name="title" type="string">
+        The title of the notification.
+      </Property>
+      <Property name="content" type="string">
+        The content or message of the notification.
+      </Property>
+    </Properties>
+
+    ### Edge Cases:
+    - **Missing Required Fields**: If any required fields are missing, a `400 Bad Request` status code will be returned.
+    - **Invalid Notification Type**: If the `type` is not one of the allowed values, a `400 Bad Request` status code will be returned.
+
+    
+
+  </Col>
+  <Col sticky>
+
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
+
+    <CodeGroup title="Request" tag="POST" label="/api/v1/notification">
+
+    ```json {{ title: 'HTTP(S)' }}
+      {
+        "userId": "64e8d6aeb8d6f90017c0a8d4",
+        "type": "ORDER_CONFIRMATION",
+        "title": "Order Confirmed",
+        "content": "Your order #12345 has been confirmed."
+      }
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "status": 200,
+      "data": {
+        "_id": "65b12adad41ea8eb64ba1001",
+        "userId": "64e8d6aeb8d6f90017c0a8d4",
+        "type": "ORDER_CONFIRMATION",
+        "title": "Order Confirmed",
+        "content": "Your order #12345 has been confirmed.",
+        "isRead": false,
+        "createdAt": "2025-01-07T15:38:13.631Z",
+        "updatedAt": "2025-01-07T15:38:13.631Z"
+      }
+    }
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Get Notifications {{ tag: 'GET', label: '/api/v1/notification' }}
+
+<Row>
+  <Col>
+
+    This endpoint retrieves all notifications for the authenticated user. Notifications are sorted by `createdAt` in descending order (newest first).
+
+    ### Edge Cases:
+    - **No Notifications Found**: If no notifications exist for the user, the server will return an empty list with a `200 OK` status code.
+
+  </Col>
+  <Col sticky>
+
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{user_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
+
+    <CodeGroup title="Request" tag="GET" label="/api/v1/notification">
+
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/notification
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    [
+      {
+        "_id": "65b12adad41ea8eb64ba1001",
+        "userId": "64e8d6aeb8d6f90017c0a8d4",
+        "type": "ORDER_CONFIRMATION",
+        "title": "Order Confirmed",
+        "content": "Your order #12345 has been confirmed.",
+        "isRead": false,
+        "createdAt": "2025-01-07T15:38:13.631Z",
+        "updatedAt": "2025-01-07T15:38:13.631Z"
+      },
+      {
+        "_id": "65b12adad41ea8eb64ba1002",
+        "userId": "64e8d6aeb8d6f90017c0a8d4",
+        "type": "ORDER_SHIPPED",
+        "title": "Order Shipped",
+        "content": "Your order #12345 has been shipped.",
+        "isRead": false,
+        "createdAt": "2025-01-06T15:38:13.631Z",
+        "updatedAt": "2025-01-06T15:38:13.631Z"
+      }
+    ]
+    ```
+
+  </Col>
+</Row>
+
+---
+
+## Mark Notification as Read {{ tag: 'PATCH', label: '/api/v1/notification/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows a user to mark a specific notification as read by providing the notification ID.
+
+    ### Edge Cases:
+    - **Invalid Notification ID**: If the provided ID does not correspond to an existing notification, a `404 Not Found` status code will be returned.
+
+  </Col>
+  <Col sticky>
+
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{user_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
+
+    <CodeGroup title="Request" tag="PATCH" label="/api/v1/notification/:id">
+
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/notification/65b12adad41ea8eb64ba1001
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "message": "Notification marked as read"
+    }
+    ```
+
+  </Col>
+</Row>

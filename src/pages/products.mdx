@@ -118,9 +118,7 @@ The product model includes various attributes like title, price, description, an
 
 ---
 
-### Query Parameters
-
-<CompactTable>
+<CompactTable heading="Query params" hasHeader={false}>
   <CompactRow>
     <CompactCell code>categoryId</CompactCell>
     <CompactCell type>string</CompactCell>
@@ -180,31 +178,57 @@ The product model includes various attributes like title, price, description, an
 
     This endpoint allows you to retrieve a paginated list of all products available in your e-commerce platform. The list can be filtered by category, brand, and more.
 
-    ### Edge Cases:
-    - **Unauthorized**: If a non-admin user tries to access this endpoint, they will receive a `403 Forbidden` error.
-    - **No Products Found**: If no products match the filters or exist, the server will return a `404 Not Found` status code or an empty array.
+    <CompactTable heading="Query params example" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>categoryId</CompactCell>
+    <CompactCell isLast>65b12adad41ea8eb64ba1098</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell>brandId</CompactCell>
+    <CompactCell isLast>65b12adad41ea8eb64ba1100</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell>minPrice</CompactCell>
+    <CompactCell isLast>50</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell>maxPrice</CompactCell>
+    <CompactCell isLast>500</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell>isActive</CompactCell>
+    <CompactCell isLast>true</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell>freeShipping</CompactCell>
+    <CompactCell isLast>true</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell>sortBy</CompactCell>
+    <CompactCell isLast>price</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell>sortOrder</CompactCell>
+    <CompactCell isLast>asc</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell>page</CompactCell>
+    <CompactCell isLast>1</CompactCell>
+  </CompactRow>
+  <CompactRow>
+    <CompactCell>limit</CompactCell>
+    <CompactCell isLast>10</CompactCell>
+  </CompactRow>
+</CompactTable>
 
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/products">
-
+  <CodeGroup title="Request" tag="GET" label="/v1/products">
     ```bash {{ title: 'cURL' }}
-    curl -G {{host}}/api/v1/products \
-      -d "categoryId=65b12adad41ea8eb64ba1098" \
-      -d "brandId=65b12adad41ea8eb64ba1100" \
-      -d "minPrice=50" \
-      -d "maxPrice=500" \
-      -d "isActive=true" \
-      -d "freeShipping=true" \
-      -d "sortBy=price" \
-      -d "sortOrder=asc" \
-      -d "page=1" \
-      -d "limit=10"
+    curl -G {{host}}/api/v1/products
     ```
-
     </CodeGroup>
-
     ```json {{ title: 'Response' }}
     {
       "docs": [
@@ -258,20 +282,17 @@ The product model includes various attributes like title, price, description, an
 
     ### Edge Cases:
     - **Product Not Found**: If a product with the provided ID does not exist, the server will return a `404 Not Found` status code.
-    - **Unauthorized**: If an unauthorized user attempts to access this endpoint, they will receive a `403 Forbidden` status code.
 
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/products/product123">
+    <CodeGroup title="Request" tag="GET" label="/v1/products/6780d867ee24d31843089600">
 
-    ```bash {{ title: 'cURL' }}
-    curl {{host}}/api/v1/products/product123 \
-      -H "Authorization: Bearer {admin_token}"
+    ```bash {{ title: 'HTTP' }}
+    {{host}}/api/v1/products/6780d867ee24d31843089649
     ```
 
     </CodeGroup>
-
     ```json {{ title: 'Response' }}
     {
       "_id": "6780d867ee24d31843089649",
@@ -300,7 +321,7 @@ The product model includes various attributes like title, price, description, an
               "categoryId": 98,
               "name": "Babies & Kids",
               "slug": "babies_kids",
-              "thumbnail": "http://localhost:8080/assets/categories/babies_kids.png",
+              "thumbnail": "{{host}}/assets/categories/babies_kids.png",
               "status": "PUBLISHED",
               "parentId": 0,
               "__v": 0,
@@ -360,6 +381,8 @@ The product model includes various attributes like title, price, description, an
 
     ### Required attributes
 
+    
+
     <Properties>
       <Property name="title" type="string">
         The title of the product.
@@ -379,45 +402,57 @@ The product model includes various attributes like title, price, description, an
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/products">
-
-    ```bash {{ title: 'cURL' }}
-    curl {{host}}/api/v1/products \
-      -H "Authorization: Bearer {admin_token}" \
-      -d {
-            "title": "New Product",
-            "price": 100,
-            "description": "A new product",
-            "discount": {
-                "type": "PERCENT",
-                "value": 0
-            },
-            "files": [
-               "fileid1",
-                "fileId2"
-            ]
-            "categoryId": [
-                "categoryId1",
-                "categoryId2"
-            ]
-            "acceptInstallments": false,
-            "freeShipping": false,
-            "isLocalStore": false
-          }
-    ```
-
-    </CodeGroup>
-
-    ```json {{ title: 'Response' }}
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
+    <CodeGroup title="Request" tag="POST" label="/api/v1/products">
+    ```json {{ title: 'HTTP' }}
     {
-      "_id": "newProduct123",
       "title": "New Product",
       "price": 100,
       "description": "A new product",
-      "views": 0,
+      "discount": {
+          "type": "PERCENT",
+          "value": 0
+      },
+      "files": [
+        "6780d867ee24d31843089641",
+        "6780d867ee24d31843089642"
+      ]
+      "categoryId": [
+          "6780d867ee24d31843089643",
+          "6780d867ee24d31843089644"
+      ]
       "acceptInstallments": false,
       "freeShipping": false,
       "isLocalStore": false
+    }
+    ```
+    </CodeGroup>
+    ```json {{ title: 'Response' }}
+    {
+      "_id": "6780d867ee24d31843089600",
+      "title": "New Product",
+      "description": "A new product",
+      "price": 100,
+      "views": 0,
+      "currency": {
+          "symbol": "$",
+          "name": "US Dollar",
+          "symbol_native": "$",
+          "decimal_digits": 2,
+          "rounding": 0,
+          "code": "USD",
+          "name_plural": "US dollars"
+      },
+      "formattedPrice": "$ 900.00"
+      "acceptInstallments": false,
+      "freeShipping": false,
+      "isLocalStore": false
+      .....
     }
     ```
 
@@ -440,22 +475,27 @@ The product model includes various attributes like title, price, description, an
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="PUT" label="/v1/products/product123">
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    ```bash {{ title: 'cURL' }}
-    curl -X PUT {{host}}/api/v1/products/product123 \
-      -H "Authorization: Bearer {admin_token}" \
-      -d {
+    <CodeGroup title="Request" tag="PUT" label="/api/v1/products/6780d867ee24d31843089600">
+
+    ```json {{ title: 'HTTP' }}
+      {
         "title": "Updated Product",
         "price": 120
-       }
+      }
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
-      "_id": "product123",
+      "_id": "6780d867ee24d31843089600",
       "title": "Updated Product",
       "price": 120,
       "description": "A great updated product",
@@ -482,11 +522,17 @@ The product model includes various attributes like title, price, description, an
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="DELETE" label="/v1/products/product123">
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    ```bash {{ title: 'cURL' }}
-    curl -X DELETE {{host}}/api/v1/products/product123 \
-      -H "Authorization: Bearer {admin_token}"
+    <CodeGroup title="Request" tag="DELETE" label="/v1/products/6780d867ee24d31843089600">
+
+    ```bash {{ title: 'HTTP' }}
+    {{host}}/api/v1/products/6780d867ee24d31843089600
     ```
 
     </CodeGroup>

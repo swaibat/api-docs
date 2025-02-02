@@ -152,11 +152,10 @@ Each setting in the platform is represented by a model that contains various att
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/settings">
+    <CodeGroup title="Request" tag="GET" label="api/v1/settings">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G {{host}}/api/v1/settings \
-      -H "Authorization: Bearer {user_token}"
+    ```bash {{ title: 'HTTP(S)' }}
+    https:///{{host}}/api/v1/settings
     ```
 
     </CodeGroup>
@@ -196,7 +195,7 @@ Each setting in the platform is represented by a model that contains various att
 
 ---
 
-## Update Settings {{ tag: 'PUT', label: '/v1/settings' }}
+## Update Settings {{ tag: 'PUT', label: '/api/v1/settings' }}
 
 <Row>
   <Col>
@@ -277,17 +276,21 @@ Each setting in the platform is represented by a model that contains various att
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="PUT" label="/v1/settings">
+    <CodeGroup title="Request" tag="PUT" label="/api/v1/settings">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X PUT {{host}}/api/v1/settings \
-      -H "Authorization: Bearer {user_token}" \
-      --data '{
+    ```json {{ title: 'HTTP(S)' }}
+      {
         "businessName": "Updated Business Name",
         "email": "updated@business.com",
         "currency": "EUR"
-      }'
+      }
     ```
 
     </CodeGroup>
@@ -327,7 +330,7 @@ Each setting in the platform is represented by a model that contains various att
 
 ---
 
-## Reset Settings {{ tag: 'DELETE', label: '/v1/settings' }}
+## Reset Settings {{ tag: 'DELETE', label: '/api/v1/settings' }}
 
 <Row>
   <Col>
@@ -339,18 +342,24 @@ Each setting in the platform is represented by a model that contains various att
 
   </Col>
   <Col sticky>
+    <CompactTable heading="Headers" hasHeader={false}>
+      <CompactRow>
+        <CompactCell>Authorization</CompactCell>
+        <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+      </CompactRow>
+    </CompactTable>
 
-    <CodeGroup title="Request" tag="DELETE" label="/v1/settings">
+    <CodeGroup title="Request" tag="DELETE" label="/api/v1/settings">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X DELETE {{host}}/api/v1/settings \
-      -H "Authorization: Bearer {admin_token}"
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/settings
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
+      "status": 200,
       "message": "Settings have been reset to default values."
     }
     ```

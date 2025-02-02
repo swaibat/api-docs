@@ -15,11 +15,6 @@ Each flash sale in the platform is represented by a model that contains attribut
 
 <CompactTable>
   <CompactRow>
-    <CompactCell code>_id</CompactCell>
-    <CompactCell type>objectId</CompactCell>
-    <CompactCell>Unique identifier for the flash sale.</CompactCell>
-  </CompactRow>
-  <CompactRow>
     <CompactCell code>name</CompactCell>
     <CompactCell type>string</CompactCell>
     <CompactCell>Name of the flash sale.</CompactCell>
@@ -68,9 +63,8 @@ Each flash sale in the platform is represented by a model that contains attribut
 
     <CodeGroup title="Request" tag="GET" label="/v1/flashsales">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G {{host}}/api/v1/flashsales \
-      -H "Authorization: Bearer {user_token}"
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/flashsales
     ```
 
     </CodeGroup>
@@ -79,9 +73,9 @@ Each flash sale in the platform is represented by a model that contains attribut
     {
       "data": [
         {
-          "_id": "unique_flashsale_id",
+          "_id": "634dd5f9cd3498370afbdba0",
           "name": "New Year Sale",
-          "products": ["product_id_1", "product_id_2"],
+          "products": ["634dd5f9cd3498370afbdbbb", "634dd5f9cd3498370afbdbcc"],
           "discount": 30,
           "startAt": "2025-01-01T00:00:00Z",
           "endAt": "2025-01-01T23:59:59Z",
@@ -98,12 +92,13 @@ Each flash sale in the platform is represented by a model that contains attribut
 
 ---
 
-## Update Flash Sale {{ tag: 'PUT', label: '/v1/flashsales/:id' }}
+## Update Flash Sale {{ tag: 'PUT', label: '/api/v1/flashsales' }}
 
 <Row>
   <Col>
 
     This endpoint allows you to update the details of an existing flash sale. You can update attributes such as the name, products, discount percentage, start and end times, and status.
+    <Note>in flashsales model we have one object which is created during seeding so we dont need an id to update the fllashsale the available fllashsale item will be automatically updated</Note>
 
     ### Required Attributes
 
@@ -134,26 +129,30 @@ Each flash sale in the platform is represented by a model that contains attribut
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="PUT" label="/v1/flashsales/:id">
+    <CodeGroup title="Request" tag="PUT" label="/api/v1/flashsales">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X PUT {{host}}/api/v1/flashsales/unique_flashsale_id \
-      -H "Authorization: Bearer {user_token}" \
-      --data '{
+    ```json {{ title: 'HTTP(S)' }}
+      {
         "name": "Updated Sale Name",
         "discount": 40,
         "startAt": "2025-01-05T00:00:00Z",
         "endAt": "2025-01-05T23:59:59Z",
         "status": "inactive"
-      }'
+      }
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
-      "_id": "unique_flashsale_id",
+      "_id": "65b12adad41ea8eb64ba1001",
       "name": "Updated Sale Name",
       "products": ["product_id_1", "product_id_2"],
       "dateRange": ["2025-01-05T00:00:00Z", "2025-01-05T23:59:59Z"],

@@ -15,11 +15,6 @@ Each message in the platform is represented by a model that contains attributes 
 
 <CompactTable>
   <CompactRow>
-    <CompactCell code>_id</CompactCell>
-    <CompactCell type>objectId</CompactCell>
-    <CompactCell>Unique identifier for the message.</CompactCell>
-  </CompactRow>
-  <CompactRow>
     <CompactCell code>from</CompactCell>
     <CompactCell type>objectId</CompactCell>
     <CompactCell>Reference to the sender (User).</CompactCell>
@@ -89,18 +84,22 @@ Each message in the platform is represented by a model that contains attributes 
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/messages">
+    <CodeGroup title="Request" tag="POST" label="api/v1/messages">
 
-    ```bash {{ title: 'cURL' }}
-    curl {{host}}/api/v1/messages \
-      -H "Authorization: Bearer {user_token}" \
-      --data '{
+    ```bash {{ title: 'HTTP(S)' }}
+      {
         "from": "634dd5f9cd3498370afbdba4",
         "to": "63582d9ff8614efe18526c9e",
         "message": "Hello, how are you?",
         "type": "text"
-      }'
+      }
     ```
 
     </CodeGroup>
@@ -123,7 +122,7 @@ Each message in the platform is represented by a model that contains attributes 
 
 ---
 
-## List all messages {{ tag: 'GET', label: '/v1/messages' }}
+## List all messages {{ tag: 'GET', label: '/api/v1/messages' }}
 
 <Row>
   <Col>
@@ -135,12 +134,17 @@ Each message in the platform is represented by a model that contains attributes 
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/messages">
+    <CodeGroup title="Request" tag="GET" label="/api/v1/messages">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G {{host}}/api/v1/messages \
-      -H "Authorization: Bearer {user_token}"
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/messages
     ```
 
     </CodeGroup>
@@ -177,7 +181,7 @@ Each message in the platform is represented by a model that contains attributes 
 
 ---
 
-## Get messages between users {{ tag: 'GET', label: '/v1/messages/conversation/:userId' }}
+## Get messages between users {{ tag: 'GET', label: '/api/v1/messages/conversation/:userId' }}
 
 <Row>
   <Col>
@@ -189,12 +193,17 @@ Each message in the platform is represented by a model that contains attributes 
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/messages/conversation/:userId">
+    <CodeGroup title="Request" tag="GET" label="/api/v1/messages/conversation/:userId">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G {{host}}/api/v1/messages/conversation/63582d9ff8614efe18526c9e \
-      -H "Authorization: Bearer {user_token}"
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/messages/conversation/63582d9ff8614efe18526c9e
     ```
 
     </CodeGroup>
@@ -231,7 +240,7 @@ Each message in the platform is represented by a model that contains attributes 
 
 ---
 
-## Reply to message {{ tag: 'POST', label: '/v1/messages/reply' }}
+## Reply to message {{ tag: 'POST', label: '/api/v1/messages' }}
 
 <Row>
   <Col>
@@ -264,19 +273,23 @@ Each message in the platform is represented by a model that contains attributes 
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/messages/reply">
+    <CodeGroup title="Request" tag="POST" label="/api/v1/messages">
 
-    ```bash {{ title: 'cURL' }}
-    curl {{host}}/api/v1/messages/reply \
-      -H "Authorization: Bearer {user_token}" \
-      --data '{
+    ```bash {{ title: 'HTTP(S)' }}
+     {
         "from": "634dd5f9cd3498370afbdba4",
         "to": "63582d9ff8614efe18526c9e",
         "replyTo": "unique_message_id",
         "message": "I am glad to hear that!",
         "type": "text"
-      }'
+      }
     ```
 
     </CodeGroup>
@@ -296,3 +309,44 @@ Each message in the platform is represented by a model that contains attributes 
 
   </Col>
 </Row>
+
+---
+
+## Delete message {{ tag: 'DELETE', label: '/api/v1/messages/:id' }}
+
+<Row>
+  <Col>
+
+    This endpoint allows you to delete a specific message by its ID. If successful, the message will be permanently removed.
+
+    ### Edge Cases:
+    - **Message Not Found**: If the specified message does not exist, the server will return a `404 Not Found` status code.
+    - **Unauthorized Access**: If the user does not have permission to delete the message, the server will return a `403 Forbidden` status code.
+
+  </Col>
+  <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+    <CompactRow>
+      <CompactCell>Authorization</CompactCell>
+      <CompactCell isLast>Bearer `{{user_token}}` </CompactCell>
+    </CompactRow>
+  </CompactTable>
+
+    <CodeGroup title="Request" tag="DELETE" label="/api/v1/messages/:id">
+
+    ```json {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/messages/65b12adad41ea8eb64ba1098
+    ```
+
+    </CodeGroup>
+
+    ```json {{ title: 'Response' }}
+    {
+      "status": 200,
+      "message": "Message deleted successfully"
+    }
+    ```
+
+  </Col>
+</Row>
+

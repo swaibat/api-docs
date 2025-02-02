@@ -18,7 +18,6 @@ Each brand in the platform is represented by a model that contains attributes li
     <CompactCell code>_id</CompactCell>
     <CompactCell type>objectId</CompactCell>
     <CompactCell>Unique identifier for the brand.</CompactCell>
-    
   </CompactRow>
   <CompactRow>
     <CompactCell code>name</CompactCell>
@@ -38,13 +37,15 @@ Each brand in the platform is represented by a model that contains attributes li
   <CompactRow>
     <CompactCell code>categoryId</CompactCell>
     <CompactCell type>objectId</CompactCell>
-    <CompactCell>ID of the associated category (references the category model).</CompactCell>
+    <CompactCell>
+      ID of the associated category (references the category model).
+    </CompactCell>
   </CompactRow>
 </CompactTable>
 
 ---
 
-## Get All Brands {{ tag: 'GET', label: '/v1/brands' }}
+## Get All Brands {{ tag: 'GET', label: '/api/v1/brands' }}
 
 <Row>
   <Col>
@@ -57,27 +58,25 @@ Each brand in the platform is represented by a model that contains attributes li
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/brands">
+    <CodeGroup title="Request" tag="GET" label="/api/v1/brands">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G {{host}}/api/v1/brands \
-      -H "Authorization: Bearer {user_token}"
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/brands
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
-    {
-      "data": [
+    [
         {
-          "_id": "unique_brand_id",
+          "_id": "65b12adad41ea8eb64ba1020",
           "name": "Brand Name",
           "origin": "Country",
           "models": ["Model A", "Model B"],
-          "categoryId": "unique_category_id"
+          "categoryId": "65b12adad41ea8eb64ba1001"
         }
+        ...
       ]
-    }
     ```
 
   </Col>
@@ -85,7 +84,7 @@ Each brand in the platform is represented by a model that contains attributes li
 
 ---
 
-## Get One Brand {{ tag: 'GET', label: '/v1/brands/:id' }}
+## Get One Brand {{ tag: 'GET', label: '/api/v1/brands/:id' }}
 
 <Row>
   <Col>
@@ -98,22 +97,18 @@ Each brand in the platform is represented by a model that contains attributes li
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/brands/:id">
-
-    ```bash {{ title: 'cURL' }}
-    curl -G {{host}}/api/v1/brands/unique_brand_id \
-      -H "Authorization: Bearer {user_token}"
+    <CodeGroup title="Request" tag="GET" label="/api/v1/brands/:id">
+    ```bash {{ title: 'HTTP(S)' }}
+      https://{{host}}/api/v1/brands/64e8d6aeb8d6f90017c0a8d4 \
     ```
-
     </CodeGroup>
-
     ```json {{ title: 'Response' }}
     {
-      "_id": "unique_brand_id",
+      "_id": "64e8d6aeb8d6f90017c0a8d4",
       "name": "Brand Name",
       "origin": "Country",
       "models": ["Model A", "Model B"],
-      "categoryId": "unique_category_id"
+      "categoryId": "65b12adad41ea8eb64ba1001"
     }
     ```
 
@@ -122,7 +117,7 @@ Each brand in the platform is represented by a model that contains attributes li
 
 ---
 
-## Get Brands By Category {{ tag: 'GET', label: '/v1/brands/category/:categoryId' }}
+## Get Brands By Category {{ tag: 'GET', label: '/api/v1/brands/category/:categoryId' }}
 
 <Row>
   <Col>
@@ -135,27 +130,24 @@ Each brand in the platform is represented by a model that contains attributes li
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/v1/brands/category/:categoryId">
+    <CodeGroup title="Request" tag="GET" label="/api/v1/brands/category/:categoryId">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G {{host}}/api/v1/brands/category/unique_category_id \
-      -H "Authorization: Bearer {user_token}"
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/brands/category/65b12adad41ea8eb64ba1001
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
-    {
-      "data": [
+    [
         {
-          "_id": "unique_brand_id",
+          "_id": "65b12adad41ea8eb64ba1020",
           "name": "Brand Name",
           "origin": "Country",
           "models": ["Model A", "Model B"],
-          "categoryId": "unique_category_id"
+          "categoryId": "65b12adad41ea8eb64ba1001"
         }
       ]
-    }
     ```
 
   </Col>
@@ -163,7 +155,7 @@ Each brand in the platform is represented by a model that contains attributes li
 
 ---
 
-## Create Brand {{ tag: 'POST', label: '/v1/brands' }}
+## Create Brand {{ tag: 'POST', label: '/api/v1/brands' }}
 
 <Row>
   <Col>
@@ -192,29 +184,33 @@ Each brand in the platform is represented by a model that contains attributes li
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="POST" label="/v1/brands">
+    <CodeGroup title="Request" tag="POST" label="/api/v1/brands">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X POST {{host}}/api/v1/brands \
-      -H "Authorization: Bearer {user_token}" \
-      --data '{
+    ```json {{ title: 'HTTP(S)' }}
+      {
         "name": "New Brand",
         "origin": "Country",
         "models": ["Model A", "Model B"],
-        "categoryId": "unique_category_id"
-      }'
+        "categoryId": "65b12adad41ea8eb64ba1001"
+      }
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
-      "_id": "unique_brand_id",
+      "_id": "65b12adad41ea8eb64ba1020",
       "name": "New Brand",
       "origin": "Country",
       "models": ["Model A", "Model B"],
-      "categoryId": "unique_category_id",
+      "categoryId": "65b12adad41ea8eb64ba1001",
       "createdAt": "2025-01-21T00:00:00Z",
       "updatedAt": "2025-01-21T00:00:00Z"
     }
@@ -225,7 +221,7 @@ Each brand in the platform is represented by a model that contains attributes li
 
 ---
 
-## Update Brand {{ tag: 'PATCH', label: '/v1/brands/:id' }}
+## Update Brand {{ tag: 'PATCH', label: '/api/v1/brands/:id' }}
 
 <Row>
   <Col>
@@ -238,25 +234,28 @@ Each brand in the platform is represented by a model that contains attributes li
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="PATCH" label="/v1/brands/:id">
+    <CodeGroup title="Request" tag="PATCH" label="/api/v1/brands/:id">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X PATCH {{host}}/api/v1/brands/unique_brand_id \
-      -H "Authorization: Bearer {user_token}" \
-      --data '{
+    ```json {{ title: 'HTTP(S)' }}
+      {
         "name": "Updated Brand Name",
         "origin": "Updated Country",
         "models": ["Updated Model A"],
         "categoryId": "updated_category_id"
-      }'
+      }
     ```
 
     </CodeGroup>
-
     ```json {{ title: 'Response' }}
     {
-      "_id": "unique_brand_id",
+      "_id": "65b12adad41ea8eb64ba1020",
       "name": "Updated Brand Name",
       "origin": "Updated Country",
       "models": ["Updated Model A"],
@@ -271,7 +270,7 @@ Each brand in the platform is represented by a model that contains attributes li
 
 ---
 
-## Delete Brand {{ tag: 'DELETE', label: '/v1/brands/:id' }}
+## Delete Brand {{ tag: 'DELETE', label: '/api/v1/brands/:id' }}
 
 <Row>
   <Col>
@@ -283,18 +282,24 @@ Each brand in the platform is represented by a model that contains attributes li
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="DELETE" label="/v1/brands/:id">
+    <CodeGroup title="Request" tag="DELETE" label="/api/v1/brands/:id">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X DELETE {{host}}/api/v1/brands/unique_brand_id \
-      -H "Authorization: Bearer {user_token}"
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/brands/65b12adad41ea8eb64ba1020
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
+      "status": 200,
       "message": "Brand deleted successfully."
     }
     ```

@@ -15,11 +15,6 @@ The category model represents the structure of a category in the system. Below i
 
 <CompactTable>
   <CompactRow>
-    <CompactCell code>categoryId</CompactCell>
-    <CompactCell type>number</CompactCell>
-    <CompactCell>A unique identifier for the category. This defaults to `1` if not specified.</CompactCell>
-  </CompactRow>
-  <CompactRow>
     <CompactCell code>name</CompactCell>
     <CompactCell type>string</CompactCell>
     <CompactCell>The name of the category. This field is required and must be unique.</CompactCell>
@@ -46,14 +41,14 @@ The category model represents the structure of a category in the system. Below i
   </CompactRow>
   <CompactRow>
     <CompactCell code>parentId</CompactCell>
-    <CompactCell type>number</CompactCell>
-    <CompactCell>Indicates the parent category ID for hierarchical organization. Defaults to `0` if the category has no parent.</CompactCell>
+    <CompactCell type>ObjectId</CompactCell>
+    <CompactCell>A reference to a file in the `Category` model, category ID for hierarchical organization. Defaults to `null` if the category has no parent.</CompactCell>
   </CompactRow>
 </CompactTable>
 
 ---
 
-## Get All Categories {{ tag: 'GET', label: '/' }}
+## Get All Categories {{ tag: 'GET', label: '/api/v1/categories' }}
 
 <Row>
   <Col>
@@ -66,11 +61,10 @@ The category model represents the structure of a category in the system. Below i
   </Col>
   <Col sticky>
 
-    <CodeGroup title="Request" tag="GET" label="/">
+    <CodeGroup title="Request" tag="GET" label="/api/v1/categories">
 
-    ```bash {{ title: 'cURL' }}
-    curl -G {{host}}/api/v1/categories \
-      -H "Authorization: Bearer {user_token}"
+    ```bash {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/categories
     ```
 
     </CodeGroup>
@@ -124,7 +118,7 @@ The category model represents the structure of a category in the system. Below i
 
 ---
 
-## Create Category {{ tag: 'POST', label: '/' }}
+## Create Category {{ tag: 'POST', label: '/api/v1/categories' }}
 
 <Row>
   <Col>
@@ -147,18 +141,22 @@ The category model represents the structure of a category in the system. Below i
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="POST" label="/">
+    <CodeGroup title="Request" tag="POST" label="/api/v1/categories">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X POST {{host}}/api/v1/categories \
-      -H "Authorization: Bearer {user_token}" \
-      --data '{
+    ```json {{ title: 'HTTP(S)' }}
+      {
         "name": "drone",
         "slug": "drone",
         "fileId": "64e8d6aeb8d6f90017c0a8d4",
         "parentId": "65b12adad41ea8eb64ba1001"
-      }'
+      }
     ```
 
     </CodeGroup>
@@ -188,7 +186,7 @@ The category model represents the structure of a category in the system. Below i
 
 ---
 
-## Update Category {{ tag: 'PUT', label: '/:id' }}
+## Update Category {{ tag: 'PUT', label: '/api/v1/categories/678fb98563fba660bb189467' }}
 
 <Row>
   <Col>
@@ -215,23 +213,26 @@ The category model represents the structure of a category in the system. Below i
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="PUT" label="/:id">
+    <CodeGroup title="Request" tag="PUT" label="/api/v1/categories/:id">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X PUT {{host}}/api/v1/categories/:id \
-      -H "Authorization: Bearer {user_token}" \
-      --data '{
+    ```json {{ title: 'HTTP(S)' }}
+      {
         "name": "Updated Fashion",
         "status": "DRAFT"
-      }'
+      }
     ```
 
     </CodeGroup>
 
     ```json {{ title: 'Response' }}
     {
-      "categoryId": 2,
       "name": "Updated Fashion",
       "slug": "fashion",
       "thumbnail": "https://example.com/images/fashion.jpg",
@@ -246,7 +247,7 @@ The category model represents the structure of a category in the system. Below i
 
 ---
 
-## Delete Category {{ tag: 'DELETE', label: '/:id' }}
+## Delete Category {{ tag: 'DELETE', label: 'api/v1/categories/:id' }}
 
 <Row>
   <Col>
@@ -258,12 +259,17 @@ The category model represents the structure of a category in the system. Below i
 
   </Col>
   <Col sticky>
+  <CompactTable heading="Headers" hasHeader={false}>
+  <CompactRow>
+    <CompactCell>Authorization</CompactCell>
+    <CompactCell isLast>Bearer `{{admin_token}}` </CompactCell>
+  </CompactRow>
+</CompactTable>
 
-    <CodeGroup title="Request" tag="DELETE" label="/:id">
+    <CodeGroup title="Request" tag="DELETE" label="api/v1/categories/:id">
 
-    ```bash {{ title: 'cURL' }}
-    curl -X DELETE {{host}}/api/v1/categories/:id \
-      -H "Authorization: Bearer {user_token}"
+    ```json {{ title: 'HTTP(S)' }}
+    https://{{host}}/api/v1/categories/64e8d6aeb8d6f90017c0a800
     ```
 
     </CodeGroup>

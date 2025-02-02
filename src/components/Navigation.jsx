@@ -10,7 +10,7 @@ import { useSectionStore } from '@/components/SectionProvider'
 import { Tag } from '@/components/Tag'
 import { remToPx } from '@/lib/remToPx'
 
-import { mdiPackage, mdiMessage, mdiFlash, mdiTag, mdiStar, mdiLock, mdiCog, mdiShape, mdiBookMarker, mdiFileDocument, mdiAccountMultiple, mdiFileDocumentOutline, mdiDatabase, mdiFileMultiple } from '@mdi/js'
+import { mdiPackage, mdiMessage, mdiFlash, mdiTag, mdiStar, mdiLock, mdiCog, mdiShape, mdiBookMarker, mdiFileDocument, mdiAccountMultiple, mdiFileDocumentOutline, mdiDatabase, mdiFileMultiple, mdiBell, mdiEmailMultiple } from '@mdi/js'
 import Icon from '@mdi/react'
 
 function useInitialValue(value, condition = true) {
@@ -215,7 +215,9 @@ export const navigation = [
       { title: 'Brands', href: '/brands', icon: mdiTag },
       { title: 'Reviews', href: '/reviews', icon: mdiStar },
       { title: 'Users', href: '/users', icon: mdiAccountMultiple },
+      { title: 'Notifications', href: '/notifications', icon: mdiBell },
       { title: 'Pages', href: '/pages', icon: mdiAccountMultiple },
+      { title: 'Emails', href: '/emails', icon: mdiEmailMultiple },
       { title: 'Settings', href: '/settings', icon: mdiCog },
     ],
   },
